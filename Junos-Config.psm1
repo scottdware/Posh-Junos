@@ -83,7 +83,7 @@ function Invoke-JunosConfig {
     
     if ($LogFile) {
         if (Test-Path $LogFile) {
-            $Ans = Read-Host "Log file exists. Do you wish to overwrite?"
+            $Ans = Read-Host 'Log file exists. Do you wish to overwrite?'
             if ($Ans -eq "y") {
                 Remove-Item -Path $LogFile -ErrorAction 'SilentlyContinue'
                 New-Item -Path $LogFile -ItemType file | Out-Null
