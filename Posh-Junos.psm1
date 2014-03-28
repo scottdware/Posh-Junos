@@ -15,7 +15,7 @@ function Get-Auth {
         [String[]] $User,
         
         [Parameter(Mandatory = $true)]
-        [String[]] $Password
+        $Password
     )
     
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
