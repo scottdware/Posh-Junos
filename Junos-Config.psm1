@@ -97,14 +97,14 @@ function Invoke-JunosConfig {
         $User = $Row.PSObject.Properties.Value[1]
         $Pass = $Row.PSObject.Properties.Value[2]
         $Creds = Get-Auth -User $User -Password $Pass
-        $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
+        # $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
         
         if ($LogFile) {
-            Log-Output -File $LogFile -Content "[$($Timestamp)] Starting configuration on $Device..."
+            Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Starting configuration on $Device..."
         }
         
         else {
-            Write-Output "[$($Timestamp)] Starting configuration on $Device..."
+            Write-Output "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Starting configuration on $Device..."
         }
         
         try {
@@ -117,24 +117,24 @@ function Invoke-JunosConfig {
             
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
-                Log-Output -File $LogFile -Content "[$($Timestamp)] Closing connection to $Device."
+                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Closing connection to $Device."
             }
             
             else {
                 Write-Output $results.Output
-                Write-Output "[$($Timestamp)] Closing connection to $Device."
+                Write-Output "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Closing connection to $Device."
             }
         }
         
         catch {
             if ($LogFile) {
-                Log-Output -File $LogFile -Content "[$($Timestamp)] Couldn't establish a connection to $Device."
-                Log-Output -File $LogFile -Content "[$($Timestamp)] Please verify your credentials, and that the device is reachable."
+                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Couldn't establish a connection to $Device."
+                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
             }
             
             else {
-                Write-Host "[$($Timestamp)] Couldn't establish a connection to $Device."
-                Write-Host "[$($Timestamp)] Please verify your credentials, and that the device is reachable."
+                Write-Host "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Couldn't establish a connection to $Device."
+                Write-Host "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
             }
         }
         
