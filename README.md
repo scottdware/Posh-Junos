@@ -11,7 +11,7 @@ module to work correctly.
 
 For automatic installation (preferred), copy the following command and paste it into your Powershell console
 
-`(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/scottdware/Posh-Junos/master/install.ps1') | iex`
+`iex (New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/scottdware/Posh-Junos/master/install.ps1")`
 
 **Manual Installation**
 
