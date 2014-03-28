@@ -65,6 +65,7 @@ function Invoke-JunosConfig {
         Invoke-JunosConfig -ConfigFile C:\Temp\commands.txt -DeviceCSV C:\Temp\devices.csv
     .Link
         https://github.com/scottdware/Junos-Config
+        https://github.com/scottdware/Posh-Junos/wiki
     #>
     
     [CmdletBinding()]
