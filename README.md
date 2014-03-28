@@ -18,11 +18,11 @@ or from within your Powershell profile.
 - To display all of the functions of this module, issue the `Get-Command -Module Posh-Junos`
 command.
 
-### Functions
+### Help, Documentation
 
-- Invoke-JunosConfig
-    - Allows you to configure Junos devices using a template-style method.
+Please visit the [Wiki][4] for more detailed documentation.
 
 [1]: https://github.com/darkoperator/Posh-SSH "Posh-SSH"
 [2]: https://github.com/darkoperator "darkoperator"
 [3]: https://github.com/scottdware/Posh-Junos/releases
+[4]: https://github.com/scottdware/Posh-Junos/wiki
