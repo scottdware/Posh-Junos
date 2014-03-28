@@ -82,6 +82,8 @@ function Invoke-JunosConfig {
     $config = Get-Content (Resolve-Path $ConfigFile)
     $devices = Import-CSV (Resolve-Path $DeviceCSV)
     $headers = $devices[0].PSObject.Properties | Select-Object Name
+    $totalDevices = $devices.Count
+    $errors = 0
     
     if ($LogFile) {
         if (Test-Path $LogFile) {
@@ -96,6 +98,10 @@ function Invoke-JunosConfig {
             New-Item -Path $LogFile -ItemType file | Out-Null
         }
     }
+    
+    Write-Output "`nStarting configuration on a total of $totalDevices devices."
+    Write-Output "Please note that this might take a while, depending on"
+    Write-Output "the number of devices you are configuring.`n"
     
     ForEach ($row in $devices) {
         $device = $row.PSObject.Properties.Value[0]
@@ -132,6 +138,8 @@ function Invoke-JunosConfig {
         }
         
         catch {
+            $errors += 1
+            
             if ($LogFile) {
                 Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] ERROR: Couldn't establish a connection to $Device."
                 Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
@@ -146,6 +154,12 @@ function Invoke-JunosConfig {
         finally {
             Remove-SSHSession -SSHSession $conn | Out-Null
         }
+    }
+    
+    Write-Output "Configuration complete - $errors configuration errors!"
+    
+    if ($errors -gt 0) {
+        Write-Output "Please check the log file '$LogFile' to review these errors."
     }
 }
 
