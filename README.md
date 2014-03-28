@@ -5,7 +5,7 @@ Allows the interaction of Junos devices (Juniper Networks) using Powershell.
 **Why Powershell?**
 
 There are a lot of good tools already out there to interact with Junos devices using
-Python, Ruby, etc. I basically wanted to add another one into the fray for those who
+[Python][5], [Ruby][6], etc. I basically wanted to add another one into the fray for those who
 might be heavy Windows users, like myself. The Python and Ruby modules can do a lot, more
 than this one can at the moment. But despite this module being so new, my goal is to keep
 adding functionality to it so it becomes an every day addition to those who love Junos!
@@ -44,3 +44,5 @@ Please visit the [Wiki][4] for more detailed documentation.
 [2]: https://github.com/darkoperator "darkoperator"
 [3]: https://github.com/scottdware/Posh-Junos/archive/master.zip
 [4]: https://github.com/scottdware/Posh-Junos/wiki
+[5]: https://techwiki.juniper.net/Automation_Scripting/Junos_OS_PyEZ
+[6]: https://techwiki.juniper.net/Automation_Scripting/Scripts_by_Languages/Ruby
