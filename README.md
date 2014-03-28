@@ -9,6 +9,12 @@ module to work correctly.
 
 ### Installation
 
+For automatic installation (preferred), copy the following command and paste it into your Powershell console
+
+`(New-Object Net.WebClient).DownloadString('') | iex`
+
+**Manual Installation**
+
 - [Download][3] the module and place it in your `Modules` folder.
     - Your `Modules` folder can be found by issuing the command `$env:PSModulePath`.
 - Import the module by issuing `Import-Module Posh-Junos` on the command line, 
