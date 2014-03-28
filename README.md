@@ -1,8 +1,6 @@
-## Junos-Config
+## Posh-Junos
 
-Allows the configuration of Junos devices (Juniper Networks) using a template-based
-configuration format so that you can specify different values unique to each device,
-if you wish.
+Allows the interaction of Junos devices (Juniper Networks) using Powershell.
 
 ### Dependancies
 
@@ -11,11 +9,16 @@ module to work correctly.
 
 ### Installation
 
+- Download the module and place it in your `Modules` folder.
+- Import the module by issuing `Import-Module Posh-Junos` on the command line, 
+or from within your Powershell profile.
+- To display all of the functions of this module, issue the `Get-Command -Module Posh-Junos`
+command.
 
-### Important notes
+### Functions
 
-
-### Todo's
+- Invoke-JunosConfig
+    - Allows you to configure Junos devices using a template-style method.
 
 [1]: https://github.com/darkoperator/Posh-SSH "Posh-SSH"
 [2]: https://github.com/darkoperator "darkoperator"
