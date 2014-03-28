@@ -113,7 +113,7 @@ function Invoke-JunosConfig {
         }
         
         try {
-            $conn = New-SSHSession -ComputerName $device -Credential $creds
+            $conn = New-SSHSession -ComputerName $device -Credential $creds -AcceptKey $true
             $size = $headers.Count
             $commands = @()
             $config | ForEach { $commands += $_ }
