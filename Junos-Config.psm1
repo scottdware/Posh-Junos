@@ -9,7 +9,7 @@ function Get-Auth {
         The password for the given username.
     #>
     
-    Param(
+    param (
         [Parameter(Mandatory = $True)]
         $User,
         
@@ -33,7 +33,7 @@ function Log-Output {
         Writes the given content to the file specified.
     #>
     
-    Param(
+    param (
         [Parameter(Mandatory = $True)]
         $File,
         
@@ -63,7 +63,7 @@ function Invoke-JunosConfig {
         https://github.com/scottdware/Junos-Config
     #>
     
-    Param(
+    param (
         [Parameter(Mandatory = $True)]
         $ConfigFile,
         
@@ -111,8 +111,9 @@ function Invoke-JunosConfig {
             $Conn = New-SSHSession -ComputerName $Device -Credential $Creds
             $Size = $Headers.Count
             $Commands = @()
-            $Config -f $Row.PSObject.Properties.Value[3..$Size] | ForEach { $Commands += $_ }
-            $results = Invoke-SSHCommand -Command $($Commands -join "; ") -SSHSession $Conn
+            $Config | ForEach { $Commands += $_ }
+            $Configuration = $Commands -f $Row.PSObject.Properties.Value[3..$Size]
+            $results = Invoke-SSHCommand -Command $($Configuration -join "; ") -SSHSession $Conn
             
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
