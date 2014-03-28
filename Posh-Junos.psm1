@@ -133,12 +133,12 @@ function Invoke-JunosConfig {
         
         catch {
             if ($LogFile) {
-                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Couldn't establish a connection to $Device."
+                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] ERROR: Couldn't establish a connection to $Device."
                 Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
             }
             
             else {
-                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Couldn't establish a connection to $Device."
+                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] ERROR: Couldn't establish a connection to $Device."
                 Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
             }
         }
