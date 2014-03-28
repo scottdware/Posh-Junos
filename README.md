@@ -15,7 +15,7 @@ For automatic installation (preferred), copy the following command and paste it 
 
 **Manual Installation**
 
-- [Download][3] the module and place it in your `Modules` folder.
+- [Download][3] the module and unzip it to a folder named `Posh-Junos` in your `Modules` folder.
     - Your `Modules` folder can be found by issuing the command `$env:PSModulePath`.
 - Import the module by issuing `Import-Module Posh-Junos` on the command line, 
 or from within your Powershell profile.
