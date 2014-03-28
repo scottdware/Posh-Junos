@@ -112,8 +112,8 @@ function Invoke-JunosConfig {
             $Size = $Headers.Count
             $Commands = @()
             $Config | ForEach { $Commands += $_ }
-            $Configuration = $Commands -f $Row.PSObject.Properties.Value[3..$Size]
-            $results = Invoke-SSHCommand -Command $($Configuration -join "; ") -SSHSession $Conn
+            $Configuration = $Commands -join "; "
+            $results = Invoke-SSHCommand -Command $($Configuration -f $Row.PSObject.Properties.Value[3..$Size]) -SSHSession $Conn
             
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
