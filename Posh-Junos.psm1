@@ -61,6 +61,8 @@ function Invoke-JunosConfig {
         Specifies the .CSV file that has all of the devices, credentials, and configurable items
     .Parameter LogFile
         If specified, all logging will be sent to this file instead of to the console.
+    .Example
+        Invoke-JunosConfig -ConfigFile C:\Temp\commands.txt -DeviceCSV C:\Temp\devices.csv
     .Link
         https://github.com/scottdware/Junos-Config
     #>
