@@ -11,17 +11,17 @@ function Get-Auth {
     
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $True)]
+        [Parameter(Mandatory = $true)]
         $User,
         
-        [Parameter(Mandatory = $True)]
+        [Parameter(Mandatory = $true)]
         $Password
     )
     
-    $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
-    $PSCreds = New-Object System.Management.Automation.PSCredential($User, $SecurePassword)
+    $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
+    $psCreds = New-Object System.Management.Automation.PSCredential($User, $securePassword)
     
-    return $PSCreds
+    return $psCreds
 }
 
 function Log-Output {
@@ -36,10 +36,10 @@ function Log-Output {
     
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $True)]
+        [Parameter(Mandatory = $true)]
         $File,
         
-        [Parameter(Mandatory = $True)]
+        [Parameter(Mandatory = $true)]
         $Content
     )
     
@@ -67,24 +67,24 @@ function Invoke-JunosConfig {
     
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $True)]
+        [Parameter(Mandatory = $true)]
         $ConfigFile,
         
-        [Parameter(Mandatory = $True)]
+        [Parameter(Mandatory = $true)]
         $DeviceCSV,
         
-        [Parameter(Mandatory = $False)]
+        [Parameter(Mandatory = $false)]
         $LogFile
     )
     
-    $Config = Get-Content (Resolve-Path $ConfigFile)
-    $Devices = Import-CSV (Resolve-Path $DeviceCSV)
-    $Headers = $Devices[0].PSObject.Properties | Select-Object Name
+    $config = Get-Content (Resolve-Path $ConfigFile)
+    $devices = Import-CSV (Resolve-Path $DeviceCSV)
+    $headers = $devices[0].PSObject.Properties | Select-Object Name
     
     if ($LogFile) {
         if (Test-Path $LogFile) {
-            $Ans = Read-Host 'Log file exists. Do you wish to overwrite?'
-            if ($Ans -eq "y") {
+            $ans = Read-Host 'Log file exists. Do you wish to overwrite?'
+            if ($ans -eq "y") {
                 Remove-Item -Path $LogFile -ErrorAction 'SilentlyContinue'
                 New-Item -Path $LogFile -ItemType file | Out-Null
             }
@@ -95,11 +95,11 @@ function Invoke-JunosConfig {
         }
     }
     
-    ForEach ($Row in $Devices) {
-        $Device = $Row.PSObject.Properties.Value[0]
-        $User = $Row.PSObject.Properties.Value[1]
-        $Pass = $Row.PSObject.Properties.Value[2]
-        $Creds = Get-Auth -User $User -Password $Pass
+    ForEach ($row in $devices) {
+        $device = $row.PSObject.Properties.Value[0]
+        $user = $row.PSObject.Properties.Value[1]
+        $pass = $row.PSObject.Properties.Value[2]
+        $creds = Get-Auth -User $user -Password $pass
         # $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
         
         if ($LogFile) {
@@ -111,12 +111,12 @@ function Invoke-JunosConfig {
         }
         
         try {
-            $Conn = New-SSHSession -ComputerName $Device -Credential $Creds
-            $Size = $Headers.Count
-            $Commands = @()
-            $Config | ForEach { $Commands += $_ }
-            $Configuration = $Commands -join "; "
-            $results = Invoke-SSHCommand -Command $($Configuration -f $Row.PSObject.Properties.Value[3..$Size]) -SSHSession $Conn
+            $conn = New-SSHSession -ComputerName $device -Credential $creds
+            $size = $headers.Count
+            $commands = @()
+            $config | ForEach { $commands += $_ }
+            $configuration = $commands -join "; "
+            $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
             
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
@@ -142,7 +142,7 @@ function Invoke-JunosConfig {
         }
         
         finally {
-            Remove-SSHSession -SSHSession $Conn | Out-Null
+            Remove-SSHSession -SSHSession $conn | Out-Null
         }
     }
 }
