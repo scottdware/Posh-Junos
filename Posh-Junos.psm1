@@ -110,6 +110,19 @@ function Invoke-JunosConfig {
         $device = $row.PSObject.Properties.Value[0]
         $user = $row.PSObject.Properties.Value[1]
         $pass = $row.PSObject.Properties.Value[2]
+        
+        if (!($user) -or !($pass)) {
+            if ($LogFile) {
+                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] No username or password was specified for $device. Please check your .CSV file!"
+            }
+            
+            else {
+                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] No username or password was specified for $device. Please check your .CSV file!"
+            }
+            
+            continue
+        }
+        
         $creds = Get-Auth -User $user -Password $pass
         # $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
         
