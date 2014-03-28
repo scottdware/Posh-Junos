@@ -112,7 +112,8 @@ function Invoke-JunosConfig {
         $creds = Get-Auth -User $user -Password $pass
         # $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
         
-        Write-Progress -Activity 'Configuration in progress...' -Status "$current of $totalDevices devices:" -PercentComplete ($current/$totalDevices * 100)
+        $percent = [Math]::Round($current / $totalDevices * 100)
+        Write-Progress -Activity 'Configuration in progress...' -Status "$current of $totalDevices devices ($percent%):" -PercentComplete $percent
         
         if ($LogFile) {
             Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Starting configuration on $Device..."
