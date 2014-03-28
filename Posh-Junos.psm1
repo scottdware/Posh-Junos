@@ -12,10 +12,10 @@ function Get-Auth {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        $User,
+        [String[]] $User,
         
         [Parameter(Mandatory = $true)]
-        $Password
+        [String[]] $Password
     )
     
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
@@ -37,10 +37,10 @@ function Log-Output {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        $File,
+        [String[]] $File,
         
         [Parameter(Mandatory = $true)]
-        $Content
+        [String[]] $Content
     )
     
     Write-Output $Content >> (Resolve-Path $File)
@@ -70,13 +70,13 @@ function Invoke-JunosConfig {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        $ConfigFile,
+        [String[]] $ConfigFile,
         
         [Parameter(Mandatory = $true)]
-        $DeviceCSV,
+        [String[]] $DeviceCSV,
         
         [Parameter(Mandatory = $false)]
-        $LogFile
+        [String[]] $LogFile
     )
     
     $config = Get-Content (Resolve-Path $ConfigFile)
