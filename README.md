@@ -5,7 +5,7 @@ Allows the interaction of Junos devices (Juniper Networks) using Powershell.
 ### Dependancies
 
 You must have the [Posh-SSH][1] module by [darkoperator][2] installed in order for this
-module to work correctly.
+module to work correctly. If you do not, then this script will attempt to install that module first.
 
 ### Installation
 
