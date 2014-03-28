@@ -8,7 +8,7 @@ $client = New-Object System.Net.WebClient
 if (!(Test-Path -Path $poshSSH)) {
     Write-Warning "Looks like you don't have 'Posh-SSH' installed!"
     Write-Warning "Please visit https://github.com/darkoperator/Posh-SSH to install it first!"
-    exit
+    break
 }
 
 if (Test-Path -Path $destination) {
