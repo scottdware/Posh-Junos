@@ -2,6 +2,18 @@
 
 Allows the interaction of Junos devices (Juniper Networks) using Powershell.
 
+**Why Powershell?**
+
+There are a lot of good tools already out there to interact with Junos devices using
+Python, Ruby, etc. I basically wanted to add another one into the fray for those who
+might be heavy Windows users, like myself. The Python and Ruby modules can do a lot, more
+than this one can at the moment. But despite this module being so new, my goal is to keep
+adding functionality to it so it becomes an every day addition to those who love Junos!
+
+Another reason why I chose to use Powershell was the majority of Windows users have Powershell
+already installed...so there's no need to install another programming language or other
+other binaries.
+
 ### Dependancies
 
 You must have the [Posh-SSH][1] module by [darkoperator][2] installed in order for this
