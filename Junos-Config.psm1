@@ -9,6 +9,7 @@ function Get-Auth {
         The password for the given username.
     #>
     
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $True)]
         $User,
@@ -33,6 +34,7 @@ function Log-Output {
         Writes the given content to the file specified.
     #>
     
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $True)]
         $File,
@@ -63,6 +65,7 @@ function Invoke-JunosConfig {
         https://github.com/scottdware/Junos-Config
     #>
     
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $True)]
         $ConfigFile,
@@ -82,7 +85,7 @@ function Invoke-JunosConfig {
         if (Test-Path $LogFile) {
             $Ans = Read-Host "Log file exists. Do you wish to overwrite?"
             if ($Ans -eq "y") {
-                Remove-Item -Path $LogFile -Force
+                Remove-Item -Path $LogFile -ErrorAction 'SilentlyContinue'
                 New-Item -Path $LogFile -ItemType file | Out-Null
             }
         }
@@ -133,8 +136,8 @@ function Invoke-JunosConfig {
             }
             
             else {
-                Write-Host "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Couldn't establish a connection to $Device."
-                Write-Host "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
+                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Couldn't establish a connection to $Device."
+                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
             }
         }
         
