@@ -12,7 +12,8 @@ module to work correctly.
 - [Download][3] the module and place it in your `Modules` folder.
     - Your `Modules` folder can be found by issuing the command `$env:PSModulePath`.
 - Import the module by issuing `Import-Module Posh-Junos` on the command line, 
-or from within your Powershell profile. Your profile can be found by issuing the command
+or from within your Powershell profile.
+    - Your profile can be found by issuing the command
 `$profile`.
 - To display all of the functions of this module, issue the `Get-Command -Module Posh-Junos`
 command.
