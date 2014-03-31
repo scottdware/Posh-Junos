@@ -232,4 +232,4 @@ function Invoke-RpcCommand {
     }
 }
 
-Export-ModuleMember -Function Invoke-JunosConfig
+Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand
