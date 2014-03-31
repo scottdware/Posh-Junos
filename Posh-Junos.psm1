@@ -196,7 +196,7 @@ function Invoke-RpcCommand {
         The username you want to execute the command as. You will be prompted for the password.
     .Parameter Password
         The password for the username specified. If you omit this, you will be prompted for the
-        password (more secure).
+        password instead (more secure).
     .Parameter File
         This will allow you to save your results to the given file.
     .Example
@@ -247,7 +247,8 @@ function Invoke-RpcCommand {
     }
     
     catch {
-        Write-Error "There was an error!"
+        Write-Warning "There was a problem connecting to $Device."
+        Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
     }
     
     finally {
