@@ -206,16 +206,16 @@ function Invoke-RpcCommand {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [String] $Device,
+        [String[]] $Device,
         
         [Parameter(Mandatory = $true)]
-        [String] $Command,
+        [String[]] $Command,
         
         [Parameter(Mandatory = $true)]
-        [String] $User,
+        [String[]] $User,
         
         [Parameter(Mandatory = $false)]
-        [String] $File
+        [String[]] $File
     )
     
     $password = Read-Host "Password" -AsSecureString
