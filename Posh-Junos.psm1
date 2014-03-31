@@ -206,32 +206,43 @@ function Invoke-RpcCommand {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [String] $Device,
+        [string] $Device,
         
         [Parameter(Mandatory = $true)]
-        [String] $Command,
+        [string] $Command,
         
         [Parameter(Mandatory = $true)]
-        [String] $User,
+        [string] $User,
+        
+        [Parameter(Mandatory = $true)]
+        [string] $Password,
         
         [Parameter(Mandatory = $false)]
-        [String] $File
+        [string] $File
     )
     
-    $pass = Read-Host "Password" -AsSecureString
-    $creds = Get-Auth -User $User -Password $pass
-    $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
-    $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
+    $creds = Get-Auth -User $User -Password $Password
     
-    if ($File) {
-        Write-Output $results.Output >> (Resolve-Path $File)
+    try {
+        $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
+        $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
+        
+        if ($File) {
+            Write-Output $results.Output >> (Resolve-Path $File)
+        }
+        
+        else {
+            Write-Output $results.Output
+        }
     }
     
-    else {
-        Write-Output $results.Output
+    catch {
+        Write-Error "There was an error!"
     }
     
-    Remove-SSHSession -SSHSession $conn | Out-Null
+    finally {
+        Remove-SSHSession -SSHSession $conn | Out-Null
+    }
 }
 
 Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand
