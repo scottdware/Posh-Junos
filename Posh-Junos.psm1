@@ -206,6 +206,8 @@ function Invoke-RpcCommand {
         Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users" -User admin
     .Example
         Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users; show system storage" -User admin
+    .Example
+        Invoke-RpcCommand -Device firewall-1.company.com -Command C:\Temp\commands.txt -User admin
     .Link
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
