@@ -191,7 +191,8 @@ function Invoke-RpcCommand {
     .Parameter Device
         The Junos device you wish to execute the command on.
     .Parameter Command
-        The command that you want to execute. Please enclose in double quotes "".
+        The command that you want to execute. Please enclose in double quotes "". To execute
+        multiple commands, separate them using a ; (see examples).
     .Parameter User
         The username you want to execute the command as.
     .Parameter Password
@@ -199,8 +200,10 @@ function Invoke-RpcCommand {
         password instead (more secure).
     .Parameter File
         This will allow you to save your results to the given file.
-    .Example
+    .Example Single command
         Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users" -User admin
+    .Example Multiple commands
+        Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users; show system storage" -User admin
     .Link
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
