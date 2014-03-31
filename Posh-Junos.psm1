@@ -188,16 +188,48 @@ function Invoke-RpcCommand {
         Execute RPC commands and return the results.
     .Description
         This function allows you to execute RPC commands, such as "show version," or any "show" command.
+    .Parameter Device
+        The Junos device you wish to execute the command on.
     .Parameter Command
-        The command that you want to execute. Enclose in double quotes ""
+        The command that you want to execute. Please enclose in double quotes ""
     .Parameter User
         The username you want to execute the command as. You will be prompted for the password.
+    .Parameter File
+        This will allow you to save your results to the given file.
     .Example
         Invoke-RpcCommand -Command "show system users" -User admin
     .Link
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
+    
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [String[]] $Device,
+        
+        [Parameter(Mandatory = $true)]
+        [String[]] $Command,
+        
+        [Parameter(Mandatory = $true)]
+        [String[]] $User,
+        
+        [Parameter(Mandatory = $false)]
+        [String[]] $File
+    )
+    
+    $password = Read-Host "Password" -AsSecureString
+    $creds = Get-Auth -User $User -Password $password
+    $conn = New-SSHSession -ComputerName $Device -Credential $creds
+    $results = Invoke-SSHCommand -Command $Command -SSHSession $conn
+    
+    if ($File) {
+        Write-Output $results.Output >> (Resolve-Path $File)
+    }
+    
+    else {
+        Write-Output $results.Output
+    }
 }
 
 Export-ModuleMember -Function Invoke-JunosConfig
