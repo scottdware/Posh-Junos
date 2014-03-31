@@ -206,20 +206,20 @@ function Invoke-RpcCommand {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [String[]] $Device,
+        [String] $Device,
         
         [Parameter(Mandatory = $true)]
-        [String[]] $Command,
+        [String] $Command,
         
         [Parameter(Mandatory = $true)]
-        [String[]] $User,
+        [String] $User,
         
         [Parameter(Mandatory = $false)]
-        [String[]] $File
+        [String] $File
     )
     
-    $password = Read-Host "Password" -AsSecureString
-    $creds = Get-Auth -User $User -Password $password
+    $pass = Read-Host "Password" -AsSecureString
+    $creds = Get-Auth -User $User -Password $pass
     $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
     $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
     
