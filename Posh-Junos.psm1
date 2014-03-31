@@ -226,7 +226,7 @@ function Invoke-RpcCommand {
     
     if (!($Password)) {
         $pass = Read-Host "Password" -AsSecureString
-        $creds = Get-Auth -User $User -Password $pass
+        $creds = New-Object System.Management.Automation.PSCredential($User, $pass)
     }
     
     else {
