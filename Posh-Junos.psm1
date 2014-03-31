@@ -187,7 +187,7 @@ function Invoke-RpcCommand {
     .Synopsis
         Execute RPC commands and return the results.
     .Description
-        This function allows you to execute RPC commands, such as "show version," or any "show" command.
+        This function allows you to execute RPC commands, such as any "show" command.
     .Parameter Device
         The Junos device you wish to execute the command on.
     .Parameter Command
@@ -220,7 +220,7 @@ function Invoke-RpcCommand {
     
     $password = Read-Host "Password" -AsSecureString
     $creds = Get-Auth -User $User -Password $password
-    $conn = New-SSHSession -ComputerName $Device -Credential $creds
+    $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
     $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
     
     if ($File) {
