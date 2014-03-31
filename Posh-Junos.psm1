@@ -238,6 +238,18 @@ function Invoke-RpcCommand {
         $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
         
         if ($File) {
+            if (Test-Path $File) {
+                $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
+                if ($ans -eq "y") {
+                    Remove-Item -Path $File -ErrorAction 'SilentlyContinue'
+                    New-Item -Path $File -ItemType file | Out-Null
+                }
+            }
+            
+            else {
+                New-Item -Path $File -ItemType file | Out-Null
+            }
+            
             Write-Output $results.Output >> (Resolve-Path $File)
         }
         
