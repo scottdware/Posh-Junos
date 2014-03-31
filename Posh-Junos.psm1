@@ -192,7 +192,9 @@ function Invoke-RpcCommand {
         The Junos device you wish to execute the command on.
     .Parameter Command
         The command that you want to execute. Please enclose in double quotes "". To execute
-        multiple commands, separate them using a ; (see examples).
+        multiple commands, separate them using a ; (see examples). You can also specify a file
+        that has the commands you want to run (one per line). This is good for quick configuration
+        of devices, also!
     .Parameter User
         The username you want to execute the command as.
     .Parameter Password
