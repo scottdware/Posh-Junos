@@ -182,4 +182,22 @@ function Invoke-JunosConfig {
     }
 }
 
+function Invoke-RpcCommand {
+    <#
+    .Synopsis
+        Execute RPC commands and return the results.
+    .Description
+        This function allows you to execute RPC commands, such as "show version," or any "show" command.
+    .Parameter Command
+        The command that you want to execute. Enclose in double quotes ""
+    .Parameter User
+        The username you want to execute the command as. You will be prompted for the password.
+    .Example
+        Invoke-RpcCommand -Command "show system users" -User admin
+    .Link
+        https://github.com/scottdware/Junos-Config
+        https://github.com/scottdware/Posh-Junos/wiki
+    #>
+}
+
 Export-ModuleMember -Function Invoke-JunosConfig
