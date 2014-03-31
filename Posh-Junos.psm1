@@ -200,9 +200,9 @@ function Invoke-RpcCommand {
         password instead (more secure).
     .Parameter File
         This will allow you to save your results to the given file.
-    .Example Single command
+    .Example
         Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users" -User admin
-    .Example Multiple commands
+    .Example
         Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users; show system storage" -User admin
     .Link
         https://github.com/scottdware/Junos-Config
