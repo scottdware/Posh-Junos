@@ -193,14 +193,14 @@ function Invoke-RpcCommand {
     .Parameter Command
         The command that you want to execute. Please enclose in double quotes ""
     .Parameter User
-        The username you want to execute the command as. You will be prompted for the password.
+        The username you want to execute the command as.
     .Parameter Password
         The password for the username specified. If you omit this, you will be prompted for the
         password instead (more secure).
     .Parameter File
         This will allow you to save your results to the given file.
     .Example
-        Invoke-RpcCommand -Command "show system users" -User admin
+        Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users" -User admin
     .Link
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
