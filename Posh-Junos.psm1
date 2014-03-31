@@ -191,7 +191,7 @@ function Invoke-RpcCommand {
     .Parameter Device
         The Junos device you wish to execute the command on.
     .Parameter Command
-        The command that you want to execute. Please enclose in double quotes ""
+        The command that you want to execute. Please enclose in double quotes "".
     .Parameter User
         The username you want to execute the command as.
     .Parameter Password
