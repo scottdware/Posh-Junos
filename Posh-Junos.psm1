@@ -194,6 +194,9 @@ function Invoke-RpcCommand {
         The command that you want to execute. Please enclose in double quotes ""
     .Parameter User
         The username you want to execute the command as. You will be prompted for the password.
+    .Parameter Password
+        The password for the username specified. If you omit this, you will be prompted for the
+        password (more secure).
     .Parameter File
         This will allow you to save your results to the given file.
     .Example
@@ -214,14 +217,21 @@ function Invoke-RpcCommand {
         [Parameter(Mandatory = $true)]
         [string] $User,
         
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $Password,
         
         [Parameter(Mandatory = $false)]
         [string] $File
     )
     
-    $creds = Get-Auth -User $User -Password $Password
+    if (!($Password)) {
+        $pass = Read-Host "Password" -AsSecureString
+        $creds = Get-Auth -User $User -Password $pass
+    }
+    
+    else {
+        $creds = Get-Auth -User $User -Password $Password
+    }
     
     try {
         $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
