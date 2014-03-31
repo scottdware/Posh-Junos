@@ -243,7 +243,7 @@ function Invoke-RpcCommand {
     try {
         $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
         
-        if ((Test-Path $($Command) -PathType Leaf)) {
+        if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
             $commands = @()
             Get-Content (Resolve-Path $Command) | ForEach { $commands += $_ }
             $results = Invoke-SSHCommand -Command $($commands -join "; ") -SSHSession $conn
