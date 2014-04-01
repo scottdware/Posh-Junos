@@ -299,7 +299,7 @@ function Get-JunosFacts {
     .Parameter Password
         The password for the username specified. If you omit this, you will be prompted for the
         password instead (more secure).
-    .Password Display
+    .Parameter Display
         If this option is specified, the information is displayed to the console/screen. If omitted,
         then the information is best suited as being stored in a variable.
     .Example
