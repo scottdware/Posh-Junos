@@ -46,6 +46,10 @@ function Log-Output {
     Write-Output $Content >> (Resolve-Path $File)
 }
 
+function Timestamp {
+    Get-Date -format "MM/dd/yyyy H:mm:ss"
+}
+
 function Invoke-JunosConfig {
     <#
     .Synopsis
@@ -114,28 +118,26 @@ function Invoke-JunosConfig {
         
         if (!($user) -or !($pass)) {
             if ($LogFile) {
-                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] No username or password was specified for $device. Please check your .CSV file!"
+                Log-Output -File $LogFile -Content "[$(Timestamp)] No username or password was specified for $device. Please check your .CSV file!"
             }
             
             else {
-                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] No username or password was specified for $device. Please check your .CSV file!"
+                Write-Warning "[$(Timestamp)] No username or password was specified for $device. Please check your .CSV file!"
             }
             
             continue
         }
         
         $creds = Get-Auth -User $user -Password $pass
-        # $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
-        
         $percent = [Math]::Round($current / $totalDevices * 100)
         Write-Progress -Activity 'Configuration in progress...' -Status "$current of $totalDevices devices ($percent%):" -PercentComplete $percent
         
         if ($LogFile) {
-            Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Starting configuration on $Device..."
+            Log-Output -File $LogFile -Content "[$(Timestamp)] Starting configuration on $Device..."
         }
         
         else {
-            Write-Output "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Starting configuration on $Device..."
+            Write-Output "[$(Timestamp)] Starting configuration on $Device..."
         }
         
         try {
@@ -155,12 +157,12 @@ function Invoke-JunosConfig {
             
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
-                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Closing connection to $Device."
+                Log-Output -File $LogFile -Content "[$(Timestamp)] Closing connection to $Device."
             }
             
             else {
                 Write-Output $results.Output
-                Write-Output "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Closing connection to $Device."
+                Write-Output "[$(Timestamp)] Closing connection to $Device."
             }
         }
         
@@ -168,13 +170,13 @@ function Invoke-JunosConfig {
             $errors += 1
             
             if ($LogFile) {
-                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] ERROR: Couldn't establish a connection to $Device."
-                Log-Output -File $LogFile -Content "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
+                Log-Output -File $LogFile -Content "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
+                Log-Output -File $LogFile -Content "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
             }
             
             else {
-                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] ERROR: Couldn't establish a connection to $Device."
-                Write-Warning "[$(Get-Date -format 'MM/dd/yyyy H:mm:ss')] Please verify your credentials, and that the device is reachable."
+                Write-Warning "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
+                Write-Warning "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
             }
         }
         
