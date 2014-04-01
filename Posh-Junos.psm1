@@ -319,18 +319,18 @@ function Get-JunosFacts {
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
-    
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [string] $Device,
-        
+
         [Parameter(Mandatory = $true)]
         [string] $User,
-        
+
         [Parameter(Mandatory = $false)]
         [string] $Password,
-        
+
         [Parameter(Mandatory = $false)]
         [switch] $Display
     )
@@ -339,20 +339,22 @@ function Get-JunosFacts {
         $pass = Read-Host "Password" -AsSecureString
         $creds = New-Object System.Management.Automation.PSCredential($User, $pass)
     }
-    
+
     else {
         $creds = Get-Auth -User $User -Password $Password
     }
-    
+
     try {
         $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
         $verResult = Invoke-SSHCommand -Command "show version | display xml" -SSHSession $conn
         $upResult = Invoke-SSHCommand -Command "show system uptime | display xml" -SSHSession $conn
+        $serResult = Invoke-SSHCommand -Command "show chassis hardware | display xml" -SSHSession $conn
         [xml] $version = $verResult.Output
         [xml] $uptime = $upResult.Output
+        [xml] $serial = $serResult.Output
         $info = @{}
 
-        if ($version.'rpc-reply'.'multi-routing-engine-results' -and $uptime.'rpc-reply'.'multi-routing-engine-results') {
+        if ($version.'rpc-reply'.'multi-routing-engine-results') {
             ForEach ($node in $version.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                 $nodeName = $node.'re-name'
                 $hostname = $node.'software-information'.'host-name'
@@ -362,25 +364,25 @@ function Get-JunosFacts {
                     $swType = $node.'software-information'.'package-information'.name
                     $swComment = $node.'software-information'.'package-information'.comment
                 }
-                
+
                 else {
                     $swType = $node.'software-information'.'package-information'[0].name
-                    $swComment = $node.'software-information'.'package-information'[0].comment        
+                    $swComment = $node.'software-information'.'package-information'[0].comment
                 }
-                
+
                 $swComment -match "^.*\[(.*)\].*$" | Out-Null
                 $swVer = $Matches[1]
-               
+
                 $nodeInfo = @{
                     "host-name" = $hostname;
                     "model" = $model;
                     "software-type" = $swType;
                     "software-version" = $swVer
                 }
-                
+
                 $info.Add($nodeName, $nodeInfo)
             }
-            
+
             ForEach ($node in $uptime.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                 $nodeName = $node.'re-name'
                 $lastBootDate = $node.'system-uptime-information'.'system-booted-time'.'date-time'.'#text'
@@ -389,12 +391,19 @@ function Get-JunosFacts {
                 $lastConfLen = $node.'system-uptime-information'.'last-configured-time'.'time-length'.'#text'
                 $lastConfUser = $node.'system-uptime-information'.'last-configured-time'.'user'
                 $uptimeDays = $node.'system-uptime-information'.'uptime-information'.'up-time'.'#text'
-                
+
                 $info.$nodeName["last-boot"] = "$($lastBootDate) ($($lastBootLen))"
                 $info.$nodeName["last-configured"] = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)"
                 $info.$nodeName["uptime"] = $uptimeDays
             }
-            
+
+            ForEach ($node in $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+                $nodeName = $node.'re-name'
+                $serialNum = $node.'chassis-inventory'.chassis.'serial-number'
+
+                $info.$nodeName["serial"] = $serialNum
+            }
+
             if ($Display) {
                 $info.GetEnumerator() | Sort-Object Name | ForEach {
                     Write-Output "RE: $($_.key)"
@@ -405,9 +414,10 @@ function Get-JunosFacts {
                     Write-Output "`tLast Boot: $($_.value['last-boot'])"
                     Write-Output "`tLast Configured: $($_.value['last-configured'])"
                     Write-Output "`tUptime: $($_.value['uptime'])"
+                    Write-Output "`tSerial Number: $($_.value['serial'])"
                 }
             }
-            
+
             else {
                 return $info
             }
@@ -422,20 +432,21 @@ function Get-JunosFacts {
             $lastConfLen = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'time-length'.'#text'
             $lastConfUser = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'user'
             $uptimeDays = $uptime.'rpc-reply'.'system-uptime-information'.'uptime-information'.'up-time'.'#text'
-            
+            $serialNum = $serial.'rpc-reply'.'chassis-inventory'.chassis.'serial-number'
+
             if ($model -imatch "srx") {
                 $swType = $xml.'rpc-reply'.'software-information'.'package-information'.name
                 $swComment = $xml.'rpc-reply'.'software-information'.'package-information'.comment
             }
-            
+
             else {
                 $swType = $xml.'rpc-reply'.'software-information'.'package-information'[0].name
-                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'[0].comment        
+                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'[0].comment
             }
 
             $swComment -match "^.*\[(.*)\].*$" | Out-Null
             $swVer = $Matches[1]
-            
+
             $info = @{
                 "host-name" = $hostname;
                 "model" = $model;
@@ -443,7 +454,8 @@ function Get-JunosFacts {
                 "software-version" = $swVer;
                 "last-boot" = "$($lastBootDate) ($($lastBootLen))";
                 "last-configured" = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)";
-                "uptime" = $uptimeDays
+                "uptime" = $uptimeDays;
+                "serial" = $serialNum
             }
 
             if ($Display) {
@@ -451,22 +463,23 @@ function Get-JunosFacts {
                 Write-Output "Model: $($info['model'])"
                 Write-Output "Software Version: $($info['software-version'])"
                 Write-Output "Software Type: $($info['software-type'])"
-                Write-Output "`tLast Boot: $($_.value['last-boot'])"
-                Write-Output "`tLast Configured: $($_.value['last-configured'])"
-                Write-Output "`tUptime: $($_.value['uptime'])"
+                Write-Output "Last Boot: $($_.value['last-boot'])"
+                Write-Output "Last Configured: $($_.value['last-configured'])"
+                Write-Output "Uptime: $($_.value['uptime'])"
+                Write-Output "Serial Number: $($_.value['serial'])"
             }
-            
+
             else {
                 return $info
             }
         }
     }
-    
+
     catch {
         Write-Warning "There was a problem connecting to $Device."
         Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
     }
-    
+
     finally {
         Remove-SSHSession -SSHSession $conn | Out-Null
     }
