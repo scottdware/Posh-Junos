@@ -276,7 +276,6 @@ function Invoke-RpcCommand {
                 New-Item -Path $File -ItemType file | Out-Null
             }
             
-            Write-Output "Executing command: '$Command'" >> (Resolve-Path $File)
             Write-Output $results.Output >> (Resolve-Path $File)
         }
         
