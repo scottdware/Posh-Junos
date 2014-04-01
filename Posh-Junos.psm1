@@ -12,13 +12,8 @@ function Get-Auth {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-<<<<<<< HEAD
         [string] $User,
-        
-=======
-        [String[]] $User,
 
->>>>>>> origin/get-junosfacts
         [Parameter(Mandatory = $true)]
         $Password
     )
@@ -42,13 +37,8 @@ function Log-Output {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-<<<<<<< HEAD
         [string] $File,
-        
-=======
-        [String[]] $File,
 
->>>>>>> origin/get-junosfacts
         [Parameter(Mandatory = $true)]
         [string] $Content
     )
@@ -86,19 +76,11 @@ function Invoke-JunosConfig {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-<<<<<<< HEAD
         [string] $ConfigFile,
         
         [Parameter(Mandatory = $true)]
         [string] $DeviceList,
-        
-=======
-        [String[]] $ConfigFile,
 
-        [Parameter(Mandatory = $true)]
-        [String[]] $DeviceCSV,
-
->>>>>>> origin/get-junosfacts
         [Parameter(Mandatory = $false)]
         [string] $LogFile
     )
@@ -147,12 +129,8 @@ function Invoke-JunosConfig {
         }
 
         $creds = Get-Auth -User $user -Password $pass
-<<<<<<< HEAD
-=======
-        # $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
-
->>>>>>> origin/get-junosfacts
         $percent = [Math]::Round($current / $totalDevices * 100)
+        
         Write-Progress -Activity 'Configuration in progress...' -Status "$current of $totalDevices devices ($percent%):" -PercentComplete $percent
 
         if ($LogFile) {
@@ -169,7 +147,6 @@ function Invoke-JunosConfig {
             $commands = @()
             $config | ForEach { $commands += $_ }
             $configuration = $commands -join "; "
-<<<<<<< HEAD
             
             if ($size -eq 3) {
                 $results = Invoke-SSHCommand -Command $($configuration) -SSHSession $conn
@@ -178,11 +155,7 @@ function Invoke-JunosConfig {
             else {
                 $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
             }
-            
-=======
-            $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
 
->>>>>>> origin/get-junosfacts
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
                 Log-Output -File $LogFile -Content "[$(Timestamp)] Closing connection to $Device."
@@ -303,12 +276,7 @@ function Invoke-RpcCommand {
             else {
                 New-Item -Path $File -ItemType file | Out-Null
             }
-<<<<<<< HEAD
-            
-=======
 
-            Write-Output "Executing command: '$Command'" >> (Resolve-Path $File)
->>>>>>> origin/get-junosfacts
             Write-Output $results.Output >> (Resolve-Path $File)
         }
 
