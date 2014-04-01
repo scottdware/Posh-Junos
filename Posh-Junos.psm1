@@ -8,19 +8,24 @@ function Get-Auth {
     .Parameter Password
         The password for the given username.
     #>
-    
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+<<<<<<< HEAD
         [string] $User,
         
+=======
+        [String[]] $User,
+
+>>>>>>> origin/get-junosfacts
         [Parameter(Mandatory = $true)]
         $Password
     )
-    
+
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
     $psCreds = New-Object System.Management.Automation.PSCredential($User, $securePassword)
-    
+
     return $psCreds
 }
 
@@ -33,16 +38,21 @@ function Log-Output {
     .Parameter Content
         Writes the given content to the file specified.
     #>
-    
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+<<<<<<< HEAD
         [string] $File,
         
+=======
+        [String[]] $File,
+
+>>>>>>> origin/get-junosfacts
         [Parameter(Mandatory = $true)]
         [string] $Content
     )
-    
+
     Write-Output $Content >> (Resolve-Path $File)
 }
 
@@ -72,26 +82,34 @@ function Invoke-JunosConfig {
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
-    
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+<<<<<<< HEAD
         [string] $ConfigFile,
         
         [Parameter(Mandatory = $true)]
         [string] $DeviceList,
         
+=======
+        [String[]] $ConfigFile,
+
+        [Parameter(Mandatory = $true)]
+        [String[]] $DeviceCSV,
+
+>>>>>>> origin/get-junosfacts
         [Parameter(Mandatory = $false)]
         [string] $LogFile
     )
-    
+
     $config = Get-Content (Resolve-Path $ConfigFile)
     $devices = Import-CSV (Resolve-Path $DeviceList)
     $headers = $devices[0].PSObject.Properties | Select-Object Name
     $totalDevices = $devices.Count
     $current = 0
     $errors = 0
-    
+
     if ($LogFile) {
         if (Test-Path $LogFile) {
             $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
@@ -100,52 +118,58 @@ function Invoke-JunosConfig {
                 New-Item -Path $LogFile -ItemType file | Out-Null
             }
         }
-        
+
         else {
             New-Item -Path $LogFile -ItemType file | Out-Null
         }
     }
-    
+
     Write-Output "`nStarting configuration on a total of $totalDevices devices."
     Write-Output "Please note that this might take a while, depending on"
     Write-Output "the number of devices you are configuring.`n"
-    
+
     ForEach ($row in $devices) {
         $current += 1
         $device = $row.PSObject.Properties.Value[0]
         $user = $row.PSObject.Properties.Value[1]
         $pass = $row.PSObject.Properties.Value[2]
-        
+
         if (!($user) -or !($pass)) {
             if ($LogFile) {
                 Log-Output -File $LogFile -Content "[$(Timestamp)] No username or password was specified for $device. Please check your .CSV file!"
             }
-            
+
             else {
                 Write-Warning "[$(Timestamp)] No username or password was specified for $device. Please check your .CSV file!"
             }
-            
+
             continue
         }
-        
+
         $creds = Get-Auth -User $user -Password $pass
+<<<<<<< HEAD
+=======
+        # $Timestamp = Get-Date -format "MM/dd/yyyy H:mm:ss"
+
+>>>>>>> origin/get-junosfacts
         $percent = [Math]::Round($current / $totalDevices * 100)
         Write-Progress -Activity 'Configuration in progress...' -Status "$current of $totalDevices devices ($percent%):" -PercentComplete $percent
-        
+
         if ($LogFile) {
             Log-Output -File $LogFile -Content "[$(Timestamp)] Starting configuration on $Device..."
         }
-        
+
         else {
             Write-Output "[$(Timestamp)] Starting configuration on $Device..."
         }
-        
+
         try {
             $conn = New-SSHSession -ComputerName $device -Credential $creds -AcceptKey $true
             $size = $headers.Count
             $commands = @()
             $config | ForEach { $commands += $_ }
             $configuration = $commands -join "; "
+<<<<<<< HEAD
             
             if ($size -eq 3) {
                 $results = Invoke-SSHCommand -Command $($configuration) -SSHSession $conn
@@ -155,38 +179,42 @@ function Invoke-JunosConfig {
                 $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
             }
             
+=======
+            $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
+
+>>>>>>> origin/get-junosfacts
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
                 Log-Output -File $LogFile -Content "[$(Timestamp)] Closing connection to $Device."
             }
-            
+
             else {
                 Write-Output $results.Output
                 Write-Output "[$(Timestamp)] Closing connection to $Device."
             }
         }
-        
+
         catch {
             $errors += 1
-            
+
             if ($LogFile) {
                 Log-Output -File $LogFile -Content "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
                 Log-Output -File $LogFile -Content "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
             }
-            
+
             else {
                 Write-Warning "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
                 Write-Warning "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
             }
         }
-        
+
         finally {
             Remove-SSHSession -SSHSession $conn | Out-Null
         }
     }
-    
+
     Write-Output "Configuration complete - $errors configuration errors!"
-    
+
     if ($errors -gt 0) {
         Write-Output "Please check the log to review these errors."
     }
@@ -222,47 +250,47 @@ function Invoke-RpcCommand {
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
-    
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [string] $Device,
-        
+
         [Parameter(Mandatory = $true)]
         [string] $Command,
-        
+
         [Parameter(Mandatory = $true)]
         [string] $User,
-        
+
         [Parameter(Mandatory = $false)]
         [string] $Password,
-        
+
         [Parameter(Mandatory = $false)]
         [string] $File
     )
-    
+
     if (!($Password)) {
         $pass = Read-Host "Password" -AsSecureString
         $creds = New-Object System.Management.Automation.PSCredential($User, $pass)
     }
-    
+
     else {
         $creds = Get-Auth -User $User -Password $Password
     }
-    
+
     try {
         $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
-        
+
         if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
             $commands = @()
             Get-Content (Resolve-Path $Command) | ForEach { $commands += $_ }
             $results = Invoke-SSHCommand -Command $($commands -join "; ") -SSHSession $conn
         }
-        
+
         else {
             $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
         }
-        
+
         if ($File) {
             if (Test-Path $File) {
                 $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
@@ -271,24 +299,29 @@ function Invoke-RpcCommand {
                     New-Item -Path $File -ItemType file | Out-Null
                 }
             }
-            
+
             else {
                 New-Item -Path $File -ItemType file | Out-Null
             }
+<<<<<<< HEAD
             
+=======
+
+            Write-Output "Executing command: '$Command'" >> (Resolve-Path $File)
+>>>>>>> origin/get-junosfacts
             Write-Output $results.Output >> (Resolve-Path $File)
         }
-        
+
         else {
             Write-Output $results.Output
         }
     }
-    
+
     catch {
         Write-Warning "There was a problem connecting to $Device."
         Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
     }
-    
+
     finally {
         Remove-SSHSession -SSHSession $conn | Out-Null
     }
@@ -319,18 +352,18 @@ function Get-JunosFacts {
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
-    
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [string] $Device,
-        
+
         [Parameter(Mandatory = $true)]
         [string] $User,
-        
+
         [Parameter(Mandatory = $false)]
         [string] $Password,
-        
+
         [Parameter(Mandatory = $false)]
         [switch] $Display
     )
@@ -339,20 +372,22 @@ function Get-JunosFacts {
         $pass = Read-Host "Password" -AsSecureString
         $creds = New-Object System.Management.Automation.PSCredential($User, $pass)
     }
-    
+
     else {
         $creds = Get-Auth -User $User -Password $Password
     }
-    
+
     try {
         $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
         $verResult = Invoke-SSHCommand -Command "show version | display xml" -SSHSession $conn
         $upResult = Invoke-SSHCommand -Command "show system uptime | display xml" -SSHSession $conn
+        $serResult = Invoke-SSHCommand -Command "show chassis hardware | display xml" -SSHSession $conn
         [xml] $version = $verResult.Output
         [xml] $uptime = $upResult.Output
+        [xml] $serial = $serResult.Output
         $info = @{}
 
-        if ($version.'rpc-reply'.'multi-routing-engine-results' -and $uptime.'rpc-reply'.'multi-routing-engine-results') {
+        if ($version.'rpc-reply'.'multi-routing-engine-results') {
             ForEach ($node in $version.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                 $nodeName = $node.'re-name'
                 $hostname = $node.'software-information'.'host-name'
@@ -362,25 +397,25 @@ function Get-JunosFacts {
                     $swType = $node.'software-information'.'package-information'.name
                     $swComment = $node.'software-information'.'package-information'.comment
                 }
-                
+
                 else {
                     $swType = $node.'software-information'.'package-information'[0].name
-                    $swComment = $node.'software-information'.'package-information'[0].comment        
+                    $swComment = $node.'software-information'.'package-information'[0].comment
                 }
-                
+
                 $swComment -match "^.*\[(.*)\].*$" | Out-Null
                 $swVer = $Matches[1]
-               
+
                 $nodeInfo = @{
                     "host-name" = $hostname;
                     "model" = $model;
                     "software-type" = $swType;
                     "software-version" = $swVer
                 }
-                
+
                 $info.Add($nodeName, $nodeInfo)
             }
-            
+
             ForEach ($node in $uptime.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                 $nodeName = $node.'re-name'
                 $lastBootDate = $node.'system-uptime-information'.'system-booted-time'.'date-time'.'#text'
@@ -389,12 +424,19 @@ function Get-JunosFacts {
                 $lastConfLen = $node.'system-uptime-information'.'last-configured-time'.'time-length'.'#text'
                 $lastConfUser = $node.'system-uptime-information'.'last-configured-time'.'user'
                 $uptimeDays = $node.'system-uptime-information'.'uptime-information'.'up-time'.'#text'
-                
+
                 $info.$nodeName["last-boot"] = "$($lastBootDate) ($($lastBootLen))"
                 $info.$nodeName["last-configured"] = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)"
                 $info.$nodeName["uptime"] = $uptimeDays
             }
-            
+
+            ForEach ($node in $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+                $nodeName = $node.'re-name'
+                $serialNum = $node.'chassis-inventory'.chassis.'serial-number'
+
+                $info.$nodeName["serial"] = $serialNum
+            }
+
             if ($Display) {
                 $info.GetEnumerator() | Sort-Object Name | ForEach {
                     Write-Output "RE: $($_.key)"
@@ -405,9 +447,10 @@ function Get-JunosFacts {
                     Write-Output "`tLast Boot: $($_.value['last-boot'])"
                     Write-Output "`tLast Configured: $($_.value['last-configured'])"
                     Write-Output "`tUptime: $($_.value['uptime'])"
+                    Write-Output "`tSerial Number: $($_.value['serial'])"
                 }
             }
-            
+
             else {
                 return $info
             }
@@ -422,20 +465,21 @@ function Get-JunosFacts {
             $lastConfLen = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'time-length'.'#text'
             $lastConfUser = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'user'
             $uptimeDays = $uptime.'rpc-reply'.'system-uptime-information'.'uptime-information'.'up-time'.'#text'
-            
+            $serialNum = $serial.'rpc-reply'.'chassis-inventory'.chassis.'serial-number'
+
             if ($model -imatch "srx") {
                 $swType = $xml.'rpc-reply'.'software-information'.'package-information'.name
                 $swComment = $xml.'rpc-reply'.'software-information'.'package-information'.comment
             }
-            
+
             else {
                 $swType = $xml.'rpc-reply'.'software-information'.'package-information'[0].name
-                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'[0].comment        
+                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'[0].comment
             }
 
             $swComment -match "^.*\[(.*)\].*$" | Out-Null
             $swVer = $Matches[1]
-            
+
             $info = @{
                 "host-name" = $hostname;
                 "model" = $model;
@@ -443,7 +487,8 @@ function Get-JunosFacts {
                 "software-version" = $swVer;
                 "last-boot" = "$($lastBootDate) ($($lastBootLen))";
                 "last-configured" = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)";
-                "uptime" = $uptimeDays
+                "uptime" = $uptimeDays;
+                "serial" = $serialNum
             }
 
             if ($Display) {
@@ -451,22 +496,23 @@ function Get-JunosFacts {
                 Write-Output "Model: $($info['model'])"
                 Write-Output "Software Version: $($info['software-version'])"
                 Write-Output "Software Type: $($info['software-type'])"
-                Write-Output "`tLast Boot: $($_.value['last-boot'])"
-                Write-Output "`tLast Configured: $($_.value['last-configured'])"
-                Write-Output "`tUptime: $($_.value['uptime'])"
+                Write-Output "Last Boot: $($_.value['last-boot'])"
+                Write-Output "Last Configured: $($_.value['last-configured'])"
+                Write-Output "Uptime: $($_.value['uptime'])"
+                Write-Output "Serial Number: $($_.value['serial'])"
             }
-            
+
             else {
                 return $info
             }
         }
     }
-    
+
     catch {
         Write-Warning "There was a problem connecting to $Device."
         Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
     }
-    
+
     finally {
         Remove-SSHSession -SSHSession $conn | Out-Null
     }
