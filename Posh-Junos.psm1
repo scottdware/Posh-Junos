@@ -285,4 +285,150 @@ function Invoke-RpcCommand {
     }
 }
 
-Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand
+function Get-JunosFacts {
+    <#
+    .Synopsis
+        Get basic information about the given Junos device.
+    .Description
+        This function will get such information as hostname, software version, software type,
+        model, etc.
+    .Parameter Device
+        The Junos device you wish to query.
+    .Parameter User
+        The username you want to connect as.
+    .Parameter Password
+        The password for the username specified. If you omit this, you will be prompted for the
+        password instead (more secure).
+    .Password Display
+        If this option is specified, the information is displayed to the console/screen. If omitted,
+        then the information is best suited as being stored in a variable.
+    .Example
+        Get-JunosFacts -Device firewall-1.company.com -User admin -Display
+    .Example
+        $results = Get-JunosFacts -Device firewall-1.company.com -User admin -Password somepass
+    .Link
+        https://github.com/scottdware/Junos-Config
+        https://github.com/scottdware/Posh-Junos/wiki
+    #>
+    
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string] $Device,
+        
+        [Parameter(Mandatory = $true)]
+        [string] $User,
+        
+        [Parameter(Mandatory = $false)]
+        [string] $Password,
+        
+        [Parameter(Mandatory = $false)]
+        [switch] $Display
+    )
+
+    if (!($Password)) {
+        $pass = Read-Host "Password" -AsSecureString
+        $creds = New-Object System.Management.Automation.PSCredential($User, $pass)
+    }
+    
+    else {
+        $creds = Get-Auth -User $User -Password $Password
+    }
+    
+    try {
+        $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
+        [xml] $xml = Invoke-SSHCommand -Command "show version | display xml" -SSHSession $conn
+        $info = @{}
+
+        if ($xml.'rpc-reply'.'multi-routing-engine-results') {
+            ForEach ($node in $xml.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+                $nodeName = $node.'re-name'
+                $hostname = $node.'software-information'.'host-name'
+                $model = $node.'software-information'.'product-model'
+
+                if ($model -imatch "srx") {
+                    $swType = $node.'software-information'.'package-information'.name
+                    $swComment = $node.'software-information'.'package-information'.comment
+                }
+                
+                else {
+                    $swType = $node.'software-information'.'package-information'[0].name
+                    $swComment = $node.'software-information'.'package-information'[0].comment        
+                }
+                
+                $swComment -match "^.*\[(.*)\].*$" | Out-Null
+                $swVer = $Matches[1]
+               
+                $nodeInfo = @{
+                    "host-name" = $hostname;
+                    "model" = $model;
+                    "software-type" = $swType;
+                    "software-version" = $swVer
+                }
+                
+                $info.Add($nodeName, $nodeInfo)
+            }
+            
+            if ($Display) {
+                $info.GetEnumerator() | Sort-Object Name | ForEach {
+                    Write-Output "RE: $($_.key)"
+                    Write-Output "`tHostname: $($_.value['host-name'])"
+                    Write-Output "`tModel: $($_.value['model'])"
+                    Write-Output "`tSoftware Version: $($_.value['software-version'])"
+                    Write-Output "`tSoftware Type: $($_.value['software-type'])"
+                }
+            }
+            
+            else {
+                return $info
+            }
+        }
+
+        else {
+            $hostname = $xml.'rpc-reply'.'software-information'.'host-name'
+            $model = $xml.'rpc-reply'.'software-information'.'product-model'
+            
+            if ($model -imatch "srx") {
+                $swType = $xml.'rpc-reply'.'software-information'.'package-information'.name
+                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'.comment
+            }
+            
+            else {
+                $swType = $xml.'rpc-reply'.'software-information'.'package-information'[0].name
+                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'[0].comment        
+            }
+
+            $swComment -match "^.*\[(.*)\].*$" | Out-Null
+            $swVer = $Matches[1]
+            
+            $info = @{
+                "host-name" = $hostname;
+                "model" = $model;
+                "software-type" = $swType;
+                "software-version" = $swVer
+            }
+
+            if ($Display) {
+                Write-Output "Hostname: $($info['host-name'])"
+                Write-Output "Model: $($info['model'])"
+                Write-Output "Software Version: $($info['software-version'])"
+                Write-Output "Software Type: $($info['software-type'])"
+            }
+            
+            else {
+                return $info
+            }
+        }
+    }
+    
+    catch {
+        Write-Warning "There was a problem connecting to $Device."
+        Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
+    }
+    
+    finally {
+        Remove-SSHSession -SSHSession $conn | Out-Null
+    }
+}
+
+Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand, Get-JunosFacts
