@@ -337,7 +337,8 @@ function Get-JunosFacts {
     
     try {
         $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
-        [xml] $xml = Invoke-SSHCommand -Command "show version | display xml" -SSHSession $conn
+        $result = Invoke-SSHCommand -Command "show version | display xml" -SSHSession $conn
+        [xml] $xml = $result.Output
         $info = @{}
 
         if ($xml.'rpc-reply'.'multi-routing-engine-results') {
