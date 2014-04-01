@@ -12,7 +12,7 @@ function Get-Auth {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [String[]] $User,
+        [string] $User,
         
         [Parameter(Mandatory = $true)]
         $Password
@@ -37,10 +37,10 @@ function Log-Output {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [String[]] $File,
+        [string] $File,
         
         [Parameter(Mandatory = $true)]
-        [String[]] $Content
+        [string] $Content
     )
     
     Write-Output $Content >> (Resolve-Path $File)
@@ -57,12 +57,13 @@ function Invoke-JunosConfig {
     .Parameter ConfigFile
         Specifies the text file that has the configuration template (commands) that you wish to deploy.
         Please make sure that your commands are in 'set' format.
-    .Parameter DeviceCSV
-        Specifies the .CSV file that has all of the devices, credentials, and configurable items
+    .Parameter DeviceList
+        Specifies the .CSV file that has all of the devices, credentials, and configurable items if
+        necessary.
     .Parameter LogFile
         If specified, all logging will be sent to this file instead of to the console.
     .Example
-        Invoke-JunosConfig -ConfigFile C:\Temp\commands.txt -DeviceCSV C:\Temp\devices.csv
+        Invoke-JunosConfig -ConfigFile C:\Temp\commands.txt -DeviceList C:\Temp\devices.csv
     .Link
         https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
@@ -71,17 +72,17 @@ function Invoke-JunosConfig {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [String[]] $ConfigFile,
+        [string] $ConfigFile,
         
         [Parameter(Mandatory = $true)]
-        [String[]] $DeviceCSV,
+        [string] $DeviceList,
         
         [Parameter(Mandatory = $false)]
-        [String[]] $LogFile
+        [string] $LogFile
     )
     
     $config = Get-Content (Resolve-Path $ConfigFile)
-    $devices = Import-CSV (Resolve-Path $DeviceCSV)
+    $devices = Import-CSV (Resolve-Path $DeviceList)
     $headers = $devices[0].PSObject.Properties | Select-Object Name
     $totalDevices = $devices.Count
     $current = 0
@@ -143,7 +144,14 @@ function Invoke-JunosConfig {
             $commands = @()
             $config | ForEach { $commands += $_ }
             $configuration = $commands -join "; "
-            $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
+            
+            if ($size -eq 3) {
+                $results = Invoke-SSHCommand -Command $($configuration) -SSHSession $conn
+            }
+            
+            else {
+                $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
+            }
             
             if ($LogFile) {
                 Log-Output -File $LogFile -Content $results.Output
@@ -178,7 +186,7 @@ function Invoke-JunosConfig {
     Write-Output "Configuration complete - $errors configuration errors!"
     
     if ($errors -gt 0) {
-        Write-Output "Please check the log file '$LogFile' to review these errors."
+        Write-Output "Please check the log to review these errors."
     }
 }
 
