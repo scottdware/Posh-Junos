@@ -20,7 +20,7 @@ function Get-Auth {
     
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
     $psCreds = New-Object System.Management.Automation.PSCredential($User, $securePassword)
-    
+
     return $psCreds
 }
 
