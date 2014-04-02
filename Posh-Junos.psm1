@@ -424,8 +424,8 @@ function Get-JunosFacts {
         }
 
         else {
-            $hostname = $xml.'rpc-reply'.'software-information'.'host-name'
-            $model = $xml.'rpc-reply'.'software-information'.'product-model'
+            $hostname = $version.'rpc-reply'.'software-information'.'host-name'
+            $model = $version.'rpc-reply'.'software-information'.'product-model'
             $lastBootDate = $uptime.'rpc-reply'.'system-uptime-information'.'system-booted-time'.'date-time'.'#text'
             $lastBootLen = $uptime.'rpc-reply'.'system-uptime-information'.'system-booted-time'.'time-length'.'#text'
             $lastConfDate = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'date-time'.'#text'
@@ -435,13 +435,13 @@ function Get-JunosFacts {
             $serialNum = $serial.'rpc-reply'.'chassis-inventory'.chassis.'serial-number'
 
             if ($model -imatch "srx") {
-                $swType = $xml.'rpc-reply'.'software-information'.'package-information'.name
-                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'.comment
+                $swType = $version.'rpc-reply'.'software-information'.'package-information'.name
+                $swComment = $version.'rpc-reply'.'software-information'.'package-information'.comment
             }
 
             else {
-                $swType = $xml.'rpc-reply'.'software-information'.'package-information'[0].name
-                $swComment = $xml.'rpc-reply'.'software-information'.'package-information'[0].comment
+                $swType = $version.'rpc-reply'.'software-information'.'package-information'[0].name
+                $swComment = $version.'rpc-reply'.'software-information'.'package-information'[0].comment
             }
 
             $swComment -match "^.*\[(.*)\].*$" | Out-Null
@@ -463,10 +463,10 @@ function Get-JunosFacts {
                 Write-Output "Model: $($info['model'])"
                 Write-Output "Software Version: $($info['software-version'])"
                 Write-Output "Software Type: $($info['software-type'])"
-                Write-Output "Last Boot: $($_.value['last-boot'])"
-                Write-Output "Last Configured: $($_.value['last-configured'])"
-                Write-Output "Uptime: $($_.value['uptime'])"
-                Write-Output "Serial Number: $($_.value['serial'])"
+                Write-Output "Last Boot: $($info['last-boot'])"
+                Write-Output "Last Configured: $($info['last-configured'])"
+                Write-Output "Uptime: $($info['uptime'])"
+                Write-Output "Serial Number: $($info['serial'])"
             }
 
             else {
