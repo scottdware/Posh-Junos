@@ -399,20 +399,6 @@ function Get-JunosFacts {
                 $info.$nodeName["uptime"] = $uptimeDays
             }
 
-            ForEach ($node in $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
-                $nodeName = $node.'re-name'
-                $serialNum = $node.'chassis-inventory'.chassis.'serial-number'
-
-                $info.$nodeName["serial"] = $serialNum
-            }
-            
-            ForEach ($node in $chassis.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
-                $nodeName = $node.'re-name'
-                $lastReboot = $node.'route-engine-information'.'route-engine'.'last-reboot-reason'
-                
-                $info.$nodeName["boot-reason"] = $lastReboot
-            }
-
             if ($Display) {
                 $info.GetEnumerator() | Sort-Object Name | ForEach {
                     Write-Output "RE: $($_.key)"
@@ -423,8 +409,6 @@ function Get-JunosFacts {
                     Write-Output "`tLast Boot: $($_.value['last-boot'])"
                     Write-Output "`tLast Configured: $($_.value['last-configured'])"
                     Write-Output "`tUptime: $($_.value['uptime'])"
-                    Write-Output "`tLast Reboot Reason: $($_.value['boot-reason'])"
-                    Write-Output "`tSerial Number: $($_.value['serial'])"
                 }
             }
 
@@ -466,8 +450,6 @@ function Get-JunosFacts {
                 "last-boot" = "$($lastBootDate) ($($lastBootLen))";
                 "last-configured" = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)";
                 "uptime" = $uptimeDays;
-                "serial" = $serialNum;
-                "boot-reason" = $lastReboot
             }
 
             if ($Display) {
@@ -478,8 +460,6 @@ function Get-JunosFacts {
                 Write-Output "Last Boot: $($info['last-boot'])"
                 Write-Output "Last Configured: $($info['last-configured'])"
                 Write-Output "Uptime: $($info['uptime'])"
-                Write-Output "Last Reboot Reason: $($info['boot-reason'])"
-                Write-Output "Serial Number: $($info['serial'])"
             }
 
             else {
