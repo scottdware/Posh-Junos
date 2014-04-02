@@ -408,17 +408,14 @@ function Get-JunosFacts {
             
             ForEach ($node in $chassis.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                 $nodeName = $node.'re-name'
-                $status = $node.'route-engine-information'.'route-engine'.'status'
                 $lastReboot = $node.'route-engine-information'.'route-engine'.'last-reboot-reason'
                 
-                $info.$nodeName["re-status"] = $status
                 $info.$nodeName["boot-reason"] = $lastReboot
             }
 
             if ($Display) {
                 $info.GetEnumerator() | Sort-Object Name | ForEach {
                     Write-Output "RE: $($_.key)"
-                    Write-Output "`tStatus: $($_.value['re-status'])"
                     Write-Output "`tHostname: $($_.value['host-name'])"
                     Write-Output "`tModel: $($_.value['model'])"
                     Write-Output "`tSoftware Version: $($_.value['software-version'])"
@@ -446,7 +443,6 @@ function Get-JunosFacts {
             $lastConfUser = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'user'
             $uptimeDays = $uptime.'rpc-reply'.'system-uptime-information'.'uptime-information'.'up-time'.'#text'
             $serialNum = $serial.'rpc-reply'.'chassis-inventory'.chassis.'serial-number'
-            $status = $chassis.'rpc-reply'.'route-engine-information'.'route-engine'.'status'
             $lastReboot = $chassis.'rpc-reply'.'route-engine-information'.'route-engine'.'last-reboot-reason'
 
             if ($model -imatch "srx") {
@@ -471,12 +467,10 @@ function Get-JunosFacts {
                 "last-configured" = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)";
                 "uptime" = $uptimeDays;
                 "serial" = $serialNum;
-                "re-status" = $status;
                 "boot-reason" = $lastReboot
             }
 
             if ($Display) {
-                Write-Output "Status: $($info['re-status'])"
                 Write-Output "Hostname: $($info['host-name'])"
                 Write-Output "Model: $($info['model'])"
                 Write-Output "Software Version: $($info['software-version'])"
