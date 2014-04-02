@@ -349,9 +349,11 @@ function Get-JunosFacts {
         $verResult = Invoke-SSHCommand -Command "show version | display xml" -SSHSession $conn
         $upResult = Invoke-SSHCommand -Command "show system uptime | display xml" -SSHSession $conn
         $serResult = Invoke-SSHCommand -Command "show chassis hardware | display xml" -SSHSession $conn
+        $reResult = Invoke-SSHCommand -Command "show chassis routing-engine | display xml" -SSHSession $conn
         [xml] $version = $verResult.Output
         [xml] $uptime = $upResult.Output
         [xml] $serial = $serResult.Output
+        [xml] $chassis = $reResult.Output
         $info = @{}
 
         if ($version.'rpc-reply'.'multi-routing-engine-results') {
@@ -403,10 +405,20 @@ function Get-JunosFacts {
 
                 $info.$nodeName["serial"] = $serialNum
             }
+            
+            ForEach ($node in $chassis.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+                $nodeName = $node.'re-name'
+                $status = $node.'route-engine-information'.'route-engine'.'status'
+                $lastReboot = $node.'route-engine-information'.'route-engine'.'last-reboot-reason'
+                
+                $info.$nodeName["re-status"] = $status
+                $info.$nodeName["boot-reason"] = $lastReboot
+            }
 
             if ($Display) {
                 $info.GetEnumerator() | Sort-Object Name | ForEach {
                     Write-Output "RE: $($_.key)"
+                    Write-Output "`tStatus: $($_.value['re-status'])"
                     Write-Output "`tHostname: $($_.value['host-name'])"
                     Write-Output "`tModel: $($_.value['model'])"
                     Write-Output "`tSoftware Version: $($_.value['software-version'])"
@@ -414,6 +426,7 @@ function Get-JunosFacts {
                     Write-Output "`tLast Boot: $($_.value['last-boot'])"
                     Write-Output "`tLast Configured: $($_.value['last-configured'])"
                     Write-Output "`tUptime: $($_.value['uptime'])"
+                    Write-Output "`tLast Reboot Reason: $($_.value['boot-reason'])"
                     Write-Output "`tSerial Number: $($_.value['serial'])"
                 }
             }
@@ -433,6 +446,8 @@ function Get-JunosFacts {
             $lastConfUser = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'user'
             $uptimeDays = $uptime.'rpc-reply'.'system-uptime-information'.'uptime-information'.'up-time'.'#text'
             $serialNum = $serial.'rpc-reply'.'chassis-inventory'.chassis.'serial-number'
+            $status = $chassis.'rpc-reply'.'route-engine-information'.'route-engine'.'status'
+            $lastReboot = $chassis.'rpc-reply'.'route-engine-information'.'route-engine'.'last-reboot-reason'
 
             if ($model -imatch "srx") {
                 $swType = $version.'rpc-reply'.'software-information'.'package-information'.name
@@ -455,10 +470,13 @@ function Get-JunosFacts {
                 "last-boot" = "$($lastBootDate) ($($lastBootLen))";
                 "last-configured" = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)";
                 "uptime" = $uptimeDays;
-                "serial" = $serialNum
+                "serial" = $serialNum;
+                "re-status" = $status;
+                "boot-reason" = $lastReboot
             }
 
             if ($Display) {
+                Write-Output "Status: $($info['re-status'])"
                 Write-Output "Hostname: $($info['host-name'])"
                 Write-Output "Model: $($info['model'])"
                 Write-Output "Software Version: $($info['software-version'])"
@@ -466,6 +484,7 @@ function Get-JunosFacts {
                 Write-Output "Last Boot: $($info['last-boot'])"
                 Write-Output "Last Configured: $($info['last-configured'])"
                 Write-Output "Uptime: $($info['uptime'])"
+                Write-Output "Last Reboot Reason: $($info['boot-reason'])"
                 Write-Output "Serial Number: $($info['serial'])"
             }
 
