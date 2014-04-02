@@ -398,6 +398,17 @@ function Get-JunosFacts {
                 $info.$nodeName["last-configured"] = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)"
                 $info.$nodeName["uptime"] = $uptimeDays
             }
+           
+            ForEach ($node in $serial.'rpc-reply'.'chassis-inventory'.chassis.'chassis-module') {
+                if ($node.name -imatch "routing") {
+                    continue
+                }
+                
+                $nodeName = $node.name -replace "FPC ", "fpc"
+                $serialNum = $node.'serial-number'
+                
+                $info.$nodeName["serial"] = $serialNum
+            }           
 
             if ($Display) {
                 $info.GetEnumerator() | Sort-Object Name | ForEach {
@@ -409,6 +420,7 @@ function Get-JunosFacts {
                     Write-Output "`tLast Boot: $($_.value['last-boot'])"
                     Write-Output "`tLast Configured: $($_.value['last-configured'])"
                     Write-Output "`tUptime: $($_.value['uptime'])"
+                    Write-Output "`tSerial Number: $($_.value['serial'])"
                 }
             }
 
@@ -450,6 +462,7 @@ function Get-JunosFacts {
                 "last-boot" = "$($lastBootDate) ($($lastBootLen))";
                 "last-configured" = "$($lastConfDate) ($($lastConfLen)) by $($lastConfUser)";
                 "uptime" = $uptimeDays;
+                "serial" = $serialNum
             }
 
             if ($Display) {
@@ -460,6 +473,7 @@ function Get-JunosFacts {
                 Write-Output "Last Boot: $($info['last-boot'])"
                 Write-Output "Last Configured: $($info['last-configured'])"
                 Write-Output "Uptime: $($info['uptime'])"
+                Write-Output "Serial Number: $($info['serial'])"
             }
 
             else {
