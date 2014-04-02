@@ -399,15 +399,28 @@ function Get-JunosFacts {
                 $info.$nodeName["uptime"] = $uptimeDays
             }
            
-            ForEach ($node in $serial.'rpc-reply'.'chassis-inventory'.chassis.'chassis-module') {
-                if ($node.name -imatch "routing") {
-                    continue
+            if ($serial.'rpc-reply'.'multi-routing-engine-results' -and $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item'.'re-name' -imatch "node") {
+                ForEach ($node in $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+                    $nodeName = $node.'re-name'
+                    $serialNum = $node.'chassis-inventory'.chassis.'serial-number'
+                    
+                    $info.$nodeName["serial"] = $serialNum
+                } 
+            }
+
+            else {
+                ForEach ($node in $serial.'rpc-reply'.'chassis-inventory'.chassis.'chassis-module') {
+                    if ($node.name -imatch "routing") {
+                        continue
+                    }
+                    
+                    else {
+                        $nodeName = $node.name -replace "FPC ", "fpc"
+                        $serialNum = $node.'serial-number'
+                        
+                        $info.$nodeName["serial"] = $serialNum
+                    }
                 }
-                
-                $nodeName = $node.name -replace "FPC ", "fpc"
-                $serialNum = $node.'serial-number'
-                
-                $info.$nodeName["serial"] = $serialNum
             }           
 
             if ($Display) {
@@ -438,8 +451,7 @@ function Get-JunosFacts {
             $lastConfLen = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'time-length'.'#text'
             $lastConfUser = $uptime.'rpc-reply'.'system-uptime-information'.'last-configured-time'.'user'
             $uptimeDays = $uptime.'rpc-reply'.'system-uptime-information'.'uptime-information'.'up-time'.'#text'
-            $serialNum = $serial.'rpc-reply'.'chassis-inventory'.chassis.'serial-number'
-            $lastReboot = $chassis.'rpc-reply'.'route-engine-information'.'route-engine'.'last-reboot-reason'
+            $serialNum = $serial.'rpc-reply'.'chassis-inventory'.chassis.'chassis-module'[0].'serial-number'
 
             if ($model -imatch "srx") {
                 $swType = $version.'rpc-reply'.'software-information'.'package-information'.name
