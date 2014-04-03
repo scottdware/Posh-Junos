@@ -484,12 +484,12 @@ function Get-JunosFacts {
     }
 }
 
-function Get-SRXProxyId {
+function Get-SRXProxyID {
     <#
     .Synopsis
-        Generate traffic-selectors (multi proxy-id's) for SRX devices.
+        Generate traffic-selectors (multi proxy-ID) for SRX devices.
     .Description
-        This function will allow you to create the necessary configuration to add multi proxy-id
+        This function will allow you to create the necessary configuration to add multi proxy-ID
         support to your IPsec VPN tunnel. Juniper calls this "traffic-selectors."
     .Parameter Local
         Specify the local (your) IP addresses or subnets.
@@ -559,4 +559,4 @@ function Get-SRXProxyId {
     }
 }
 
-Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand, Get-JunosFacts, Get-SRXProxyId
+Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand, Get-JunosFacts, Get-SRXProxyID
