@@ -101,18 +101,16 @@ function Invoke-JunosConfig {
         $logfile = "$(Get-Location)\junos-config.log"
     }
 
-    if ($logfile) {
-        if (Test-Path $logfile) {
-            $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
-            if ($ans -eq "y") {
-                Remove-Item -Path $logfile -ErrorAction 'SilentlyContinue'
-                New-Item -Path $logfile -ItemType file | Out-Null
-            }
-        }
-
-        else {
+    if (Test-Path $logfile) {
+        $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
+        if ($ans -eq "y") {
+            Remove-Item -Path $logfile -ErrorAction 'SilentlyContinue'
             New-Item -Path $logfile -ItemType file | Out-Null
         }
+    }
+
+    else {
+        New-Item -Path $logfile -ItemType file | Out-Null
     }
 
     Write-Output "`nStarting configuration on a total of $totalDevices devices."
