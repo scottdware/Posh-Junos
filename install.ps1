@@ -15,18 +15,21 @@ if (Test-Path -Path $destination) {
     Write-Warning "'Posh-Junos' already installed. Updating..."
     
     Remove-Item -Force $destination -Recurse | Out-Null
-    New-Item -Path $destination -ItemType directory -Force | Out-Null
+    New-Item -Path $destination -ItemType Directory -Force | Out-Null
     
     $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
     $client.DownloadFile($sourcePSM1, "$($destination)\Posh-Junos.psm1")
+    
+    Write-Host -Fore Green 'Module Posh-Junos has been successfully updated.'
 }
 
 else {
-    New-Item -Path $destination -ItemType directory -Force | Out-Null
+    New-Item -Path $destination -ItemType Directory -Force | Out-Null
     $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
     $client.DownloadFile($sourcePSM1, "$($destination)\Posh-Junos.psm1")
+    
+    Write-Host -Fore Green 'Module Posh-Junos has been successfully installed.'
 }
 
 Import-Module Posh-Junos
-Write-Host -Fore Green 'Module Posh-Junos has been successfully installed.'
 Get-Command -Module Posh-Junos
