@@ -152,14 +152,14 @@ function Invoke-JunosConfig {
             }
 
             Log-Output -File $logfile -Content $results.Output
-            Log-Output -File $logfile -Content "[$(Timestamp)] Closing connection to $Device."
+            Log-Output -File $logfile -Content "[$(Timestamp)] Closing connection to $Device.`n"
         }
 
         catch {
             $errors += 1
 
             Log-Output -File $logfile -Content "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
-            Log-Output -File $logfile -Content "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
+            Log-Output -File $logfile -Content "[$(Timestamp)] Please verify your credentials, and that the device is reachable.`n"
         }
 
         finally {
