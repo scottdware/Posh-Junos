@@ -70,7 +70,7 @@ function Invoke-JunosConfig {
     .Example
         Invoke-JunosConfig -ConfigFile C:\Temp\commands.txt -DeviceList C:\Temp\devices.csv
     .Link
-        https://github.com/scottdware/Posh-Junos/wiki
+        https://github.com/scottdware/Posh-Junos/wiki/Functions#invoke-junosconfig
     #>
 
     [CmdletBinding()]
@@ -198,7 +198,7 @@ function Invoke-RpcCommand {
     .Example
         Invoke-RpcCommand -Device firewall-1.company.com -Command C:\Temp\commands.txt -User admin
     .Link
-        https://github.com/scottdware/Posh-Junos/wiki
+        https://github.com/scottdware/Posh-Junos/wiki/Functions#invoke-rpccommand
     #>
 
     [CmdletBinding()]
@@ -294,7 +294,7 @@ function Get-JunosFacts {
     .Example
         $results = Get-JunosFacts -Device firewall-1.company.com -User admin -Password somepass
     .Link
-        https://github.com/scottdware/Posh-Junos/wiki
+        https://github.com/scottdware/Posh-Junos/wiki/Functions#get-junosfacts
     #>
 
     [CmdletBinding()]
@@ -502,7 +502,7 @@ function Get-SRXProxyID {
     .Example
         Get-SRXProxyID -Local 10.1.1.0/24, 192.168.1.25/32 -Remote 172.20.0.0/23 -VPN Some-Company
     .Link
-        https://github.com/scottdware/Posh-Junos/wiki
+        https://github.com/scottdware/Posh-Junos/wiki/Functions#get-srxproxyid
     #>
     
     [CmdletBinding()]
