@@ -94,7 +94,7 @@ function Invoke-JunosConfig {
     $errors = 0
 
     if ($File) {
-        $logfile = (Resolve-Path $File)
+        $logfile = $File
     }
 
     else {
