@@ -64,7 +64,7 @@ function Invoke-JunosConfig {
     .Parameter DeviceList
         Specifies the .CSV file that has all of the devices, credentials, and configurable items if
         necessary.
-    .Parameter Path
+    .Parameter File
         If specified, all logging will be sent to the file specified here, instead of to the default
         location (current working directory where the script is run, named "junos-config.log").
     .Example
@@ -83,7 +83,7 @@ function Invoke-JunosConfig {
         [string] $DeviceList,
         
         [Parameter(Mandatory = $false)]
-        [string] $Path
+        [string] $File
     )
     
     $config = Get-Content (Resolve-Path $ConfigFile)
@@ -93,8 +93,8 @@ function Invoke-JunosConfig {
     $current = 0
     $errors = 0
     
-    if ($Path) {
-        $logfile = (Resolve-Path $Path)
+    if ($File) {
+        $logfile = (Resolve-Path $File)
     }
     
     else {
