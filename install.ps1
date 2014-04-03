@@ -17,6 +17,7 @@ if (Test-Path -Path $destination) {
     Remove-Item -Force $destination -Recurse | Out-Null
     Start-Sleep -Seconds 2
     New-Item -Path $destination -ItemType Directory -Force | Out-Null
+    Start-Sleep -Seconds 1
     
     $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
     $client.DownloadFile($sourcePSM1, "$($destination)\Posh-Junos.psm1")
@@ -26,6 +27,8 @@ if (Test-Path -Path $destination) {
 
 else {
     New-Item -Path $destination -ItemType Directory -Force | Out-Null
+    Start-Sleep -Seconds 1
+    
     $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
     $client.DownloadFile($sourcePSM1, "$($destination)\Posh-Junos.psm1")
     
