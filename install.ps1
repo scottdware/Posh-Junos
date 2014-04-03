@@ -12,6 +12,10 @@ if (!(Test-Path -Path $poshSSH)) {
 }
 
 if (Test-Path -Path $destination) {
+    Write-Warning "'Posh-Junos' already installed. Updating..."
+    
+    Remove-Item -Recurse -Force $destination
+    
     $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
     $client.DownloadFile($sourcePSM1, "$($destination)\Posh-Junos.psm1")
 }
@@ -23,5 +27,5 @@ else {
 }
 
 Import-Module Posh-Junos
-Write-Host -Foreground Green 'Module Posh-Junos has been successfully installed.'
+Write-Host -Fore Green 'Module Posh-Junos has been successfully installed.'
 Get-Command -Module Posh-Junos
