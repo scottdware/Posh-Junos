@@ -149,7 +149,7 @@ function Invoke-JunosConfig {
                 $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
             }
 
-            Log-Output -File $logfile -Content $results.Output
+            Log-Output -File $logfile -Content $results.Output.trim()
             Log-Output -File $logfile -Content "[$(Timestamp)] Closing connection to $Device.`n"
         }
 
