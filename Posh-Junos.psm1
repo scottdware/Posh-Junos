@@ -70,7 +70,6 @@ function Invoke-JunosConfig {
     .Example
         Invoke-JunosConfig -ConfigFile C:\Temp\commands.txt -DeviceList C:\Temp\devices.csv
     .Link
-        https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
 
@@ -199,7 +198,6 @@ function Invoke-RpcCommand {
     .Example
         Invoke-RpcCommand -Device firewall-1.company.com -Command C:\Temp\commands.txt -User admin
     .Link
-        https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
 
@@ -296,7 +294,6 @@ function Get-JunosFacts {
     .Example
         $results = Get-JunosFacts -Device firewall-1.company.com -User admin -Password somepass
     .Link
-        https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
 
@@ -492,16 +489,19 @@ function Get-SRXProxyID {
         This function will allow you to create the necessary configuration to add multi proxy-ID
         support to your IPsec VPN tunnel. Juniper calls this "traffic-selectors."
     .Parameter Local
-        Specify the local (your) IP addresses or subnets.
+        Specify the local (your) IP addresses or subnets. Please include the subnet mask in CIDR
+        notation, and separate multiple entries with a comma.
     .Parameter Remote
-        Specify the remote end IP addresses or subnets.
+        Specify the remote end IP addresses or subnets. Please include the subnet mask in CIDR
+        notation, and separate multiple entries with a comma.
     .Parameter VPN
         Specify the VPN that you want to add these traffic-selectors to. Must match the name
         you have defined under your IPsec VPN configuration.
     .Parameter File
         This will allow you to save your results to the given file.
+    .Example
+        Get-SRXProxyID -Local 10.1.1.0/24, 192.168.1.25/32 -Remote 172.20.0.0/23 -VPN Some-Company
     .Link
-        https://github.com/scottdware/Junos-Config
         https://github.com/scottdware/Posh-Junos/wiki
     #>
     
