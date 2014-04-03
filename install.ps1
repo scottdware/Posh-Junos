@@ -15,6 +15,7 @@ if (Test-Path -Path $destination) {
     Write-Warning "'Posh-Junos' already installed. Updating..."
     
     Remove-Item -Force $destination -Recurse | Out-Null
+    Start-Sleep -Seconds 2
     New-Item -Path $destination -ItemType Directory -Force | Out-Null
     
     $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
