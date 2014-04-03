@@ -254,11 +254,11 @@ function Invoke-RpcCommand {
                 New-Item -Path $File -ItemType file | Out-Null
             }
 
-            Write-Output $results.Output >> (Resolve-Path $File)
+            Write-Output $results.Output.trim() >> (Resolve-Path $File)
         }
 
         else {
-            Write-Output $results.Output
+            Write-Output $results.Output.trim()
         }
     }
 
