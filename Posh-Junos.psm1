@@ -116,7 +116,7 @@ function Invoke-JunosConfig {
     Write-Output "`nStarting configuration on a total of $totalDevices devices."
     Write-Output "Results will be logged to '$logfile'`n"
 
-    ForEach ($row in $devices) {
+    foreach ($row in $devices) {
         $current += 1
         $device = $row.PSObject.Properties.Value[0]
         $user = $row.PSObject.Properties.Value[1]
@@ -138,7 +138,7 @@ function Invoke-JunosConfig {
             $conn = New-SSHSession -ComputerName $device -Credential $creds -AcceptKey $true
             $size = $headers.Count
             $commands = @()
-            $config | ForEach { $commands += $_ }
+            $config | foreach { $commands += $_ }
             $configuration = $commands -join "; "
 
             if ($size -eq 3) {
@@ -235,7 +235,7 @@ function Invoke-RpcCommand {
 
         if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
             $commands = @()
-            Get-Content (Resolve-Path $Command) | ForEach { $commands += $_ }
+            Get-Content (Resolve-Path $Command) | foreach { $commands += $_ }
             $results = Invoke-SSHCommand -Command $($commands -join "; ") -SSHSession $conn
         }
 
@@ -337,7 +337,7 @@ function Get-JunosFacts {
         $info = @{}
 
         if ($version.'rpc-reply'.'multi-routing-engine-results') {
-            ForEach ($node in $version.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+            foreach ($node in $version.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                 $nodeName = $node.'re-name'
                 $hostname = $node.'software-information'.'host-name'
                 $model = $node.'software-information'.'product-model'
@@ -365,7 +365,7 @@ function Get-JunosFacts {
                 $info.Add($nodeName, $nodeInfo)
             }
 
-            ForEach ($node in $uptime.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+            foreach ($node in $uptime.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                 $nodeName = $node.'re-name'
                 $lastBootDate = $node.'system-uptime-information'.'system-booted-time'.'date-time'.'#text'
                 $lastBootLen = $node.'system-uptime-information'.'system-booted-time'.'time-length'.'#text'
@@ -380,7 +380,7 @@ function Get-JunosFacts {
             }
 
             if ($serial.'rpc-reply'.'multi-routing-engine-results' -and $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item'.'re-name' -imatch "node") {
-                ForEach ($node in $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
+                foreach ($node in $serial.'rpc-reply'.'multi-routing-engine-results'.'multi-routing-engine-item') {
                     $nodeName = $node.'re-name'
                     $serialNum = $node.'chassis-inventory'.chassis.'serial-number'
 
@@ -389,7 +389,7 @@ function Get-JunosFacts {
             }
 
             else {
-                ForEach ($node in $serial.'rpc-reply'.'chassis-inventory'.chassis.'chassis-module') {
+                foreach ($node in $serial.'rpc-reply'.'chassis-inventory'.chassis.'chassis-module') {
                     if ($node.name -imatch "routing") {
                         continue
                     }
@@ -404,7 +404,7 @@ function Get-JunosFacts {
             }
 
             if ($Display) {
-                $info.GetEnumerator() | Sort-Object Name | ForEach {
+                $info.GetEnumerator() | Sort-Object Name | foreach {
                     Write-Output "RE: $($_.key)"
                     Write-Output "`tHostname: $($_.value['host-name'])"
                     Write-Output "`tModel: $($_.value['model'])"
@@ -484,4 +484,79 @@ function Get-JunosFacts {
     }
 }
 
-Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand, Get-JunosFacts
+function Get-SRXProxyId {
+    <#
+    .Synopsis
+        Generate traffic-selectors (multi proxy-id's) for SRX devices.
+    .Description
+        This function will allow you to create the necessary configuration to add multi proxy-id
+        support to your IPsec VPN tunnel. Juniper calls this "traffic-selectors."
+    .Parameter Local
+        Specify the local (your) IP addresses or subnets.
+    .Parameter Remote
+        Specify the remote end IP addresses or subnets.
+    .Parameter VPN
+        Specify the VPN that you want to add these traffic-selectors to. Must match the name
+        you have defined under your IPsec VPN configuration.
+    .Parameter File
+        This will allow you to save your results to the given file.
+    .Link
+        https://github.com/scottdware/Junos-Config
+        https://github.com/scottdware/Posh-Junos/wiki
+    #>
+    
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string[]] $Local,
+        
+        [Parameter(Mandatory = $true)]
+        [string[]] $Remote,
+        
+        [Parameter(Mandatory = $true)]
+        [string] $VPN,
+        
+        [Parameter(Mandatory = $false)]
+        [string] $File
+    )
+    
+    $index = 1
+    
+    if ($File) {
+        if (Test-Path $File) {
+            $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
+            if ($ans -eq "y") {
+                Remove-Item -Path $File -ErrorAction 'SilentlyContinue'
+                New-Item -Path $File -ItemType file | Out-Null
+            }
+        }
+
+        else {
+            New-Item -Path $File -ItemType file | Out-Null
+        }
+        
+        Log-Output -File $File -Content "configure"
+        
+        foreach ($localIP in $Local) {
+            foreach ($remoteIP in $Remote) {
+                $selector = "set security ipsec vpn $VPN traffic-selector TS${index} local-ip $localIP remote-ip $remoteIP"
+                Log-Output -File $File -Content $selector
+                
+                $index += 1
+            }
+        }
+        
+        Log-Output -File $File -Content "commit and-quit"
+    }
+    
+    else {
+        foreach ($localIP in $Local) {
+            foreach ($remoteIP in $Remote) {
+                Write-Output "set security ipsec vpn $VPN traffic-selector TS${index} local-ip $localIP remote-ip $remoteIP"
+                $index += 1
+            }
+        }    
+    }
+}
+
+Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand, Get-JunosFacts, Get-SRXProxyId
