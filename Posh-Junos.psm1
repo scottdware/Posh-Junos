@@ -64,8 +64,9 @@ function Invoke-JunosConfig {
     .Parameter DeviceList
         Specifies the .CSV file that has all of the devices, credentials, and configurable items if
         necessary.
-    .Parameter LogFile
-        If specified, all logging will be sent to this file instead of to the console.
+    .Parameter Path
+        If specified, all logging will be sent to the file specified here, instead of to the default
+        location (current working directory where the script is run, named "junos-config.log").
     .Example
         Invoke-JunosConfig -ConfigFile C:\Temp\commands.txt -DeviceList C:\Temp\devices.csv
     .Link
@@ -82,7 +83,7 @@ function Invoke-JunosConfig {
         [string] $DeviceList,
         
         [Parameter(Mandatory = $false)]
-        [string] $LogFile
+        [string] $Path
     )
     
     $config = Get-Content (Resolve-Path $ConfigFile)
@@ -92,17 +93,25 @@ function Invoke-JunosConfig {
     $current = 0
     $errors = 0
     
-    if ($LogFile) {
-        if (Test-Path $LogFile) {
+    if ($Path) {
+        $logfile = (Resolve-Path $Path)
+    }
+    
+    else {
+        $logfile = "$(Get-Location)\junos-config.log"
+    }
+    
+    if ($logfile) {
+        if (Test-Path $logfile) {
             $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
             if ($ans -eq "y") {
-                Remove-Item -Path $LogFile -ErrorAction 'SilentlyContinue'
-                New-Item -Path $LogFile -ItemType file | Out-Null
+                Remove-Item -Path $logfile -ErrorAction 'SilentlyContinue'
+                New-Item -Path $logfile -ItemType file | Out-Null
             }
         }
         
         else {
-            New-Item -Path $LogFile -ItemType file | Out-Null
+            New-Item -Path $logfile -ItemType file | Out-Null
         }
     }
     
@@ -117,12 +126,8 @@ function Invoke-JunosConfig {
         $pass = $row.PSObject.Properties.Value[2]
         
         if (!($user) -or !($pass)) {
-            if ($LogFile) {
-                Log-Output -File $LogFile -Content "[$(Timestamp)] No username or password was specified for $device. Please check your .CSV file!"
-            }
-            
-            else {
-                Write-Warning "[$(Timestamp)] No username or password was specified for $device. Please check your .CSV file!"
+            if ($logfile) {
+                Log-Output -File $logfile -Content "[$(Timestamp)] No username or password was specified for $device. Please check your .CSV file!"
             }
             
             continue
@@ -132,12 +137,8 @@ function Invoke-JunosConfig {
         $percent = [Math]::Round($current / $totalDevices * 100)
         Write-Progress -Activity 'Configuration in progress...' -Status "$current of $totalDevices devices ($percent%):" -PercentComplete $percent
         
-        if ($LogFile) {
-            Log-Output -File $LogFile -Content "[$(Timestamp)] Starting configuration on $Device..."
-        }
-        
-        else {
-            Write-Output "[$(Timestamp)] Starting configuration on $Device..."
+        if ($logfile) {
+            Log-Output -File $logfile -Content "[$(Timestamp)] Starting configuration on $Device..."
         }
         
         try {
@@ -155,28 +156,18 @@ function Invoke-JunosConfig {
                 $results = Invoke-SSHCommand -Command $($configuration -f $row.PSObject.Properties.Value[3..$size]) -SSHSession $conn
             }
             
-            if ($LogFile) {
-                Log-Output -File $LogFile -Content $results.Output
-                Log-Output -File $LogFile -Content "[$(Timestamp)] Closing connection to $Device."
-            }
-            
-            else {
-                Write-Output $results.Output
-                Write-Output "[$(Timestamp)] Closing connection to $Device."
+            if ($logfile) {
+                Log-Output -File $logfile -Content $results.Output
+                Log-Output -File $logfile -Content "[$(Timestamp)] Closing connection to $Device."
             }
         }
         
         catch {
             $errors += 1
             
-            if ($LogFile) {
-                Log-Output -File $LogFile -Content "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
-                Log-Output -File $LogFile -Content "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
-            }
-            
-            else {
-                Write-Warning "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
-                Write-Warning "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
+            if ($logfile) {
+                Log-Output -File $logfile -Content "[$(Timestamp)] ERROR: Couldn't establish a connection to $Device."
+                Log-Output -File $logfile -Content "[$(Timestamp)] Please verify your credentials, and that the device is reachable."
             }
         }
         
@@ -188,7 +179,7 @@ function Invoke-JunosConfig {
     Write-Output "Configuration complete - $errors configuration errors!"
     
     if ($errors -gt 0) {
-        Write-Output "Please check the log to review these errors."
+        Write-Output "Please check the log file '$($logfile)' to review these errors."
     }
 }
 
