@@ -1,6 +1,5 @@
 $modulePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Modules"
 $poshSSH = "$($modulePath)\Posh-SSH"
-$sourceManifest = 'https://raw.githubusercontent.com/scottdware/Posh-Junos/master/Posh-Junos.psd1'
 $sourcePSM1 = 'https://raw.githubusercontent.com/scottdware/Posh-Junos/master/Posh-Junos.psm1'
 $destination = "$($modulePath)\Posh-Junos"
 $client = New-Object System.Net.WebClient
@@ -19,7 +18,6 @@ if (Test-Path -Path $destination) {
     New-Item -Path $destination -ItemType Directory -Force | Out-Null
     Start-Sleep -Seconds 1
     
-    $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
     $client.DownloadFile($sourcePSM1, "$($destination)\Posh-Junos.psm1")
     
     Write-Host -Fore Green 'Module Posh-Junos has been successfully updated.'
@@ -29,7 +27,6 @@ else {
     New-Item -Path $destination -ItemType Directory -Force | Out-Null
     Start-Sleep -Seconds 1
     
-    $client.DownloadFile($sourceManifest, "$($destination)\Posh-Junos.psd1")
     $client.DownloadFile($sourcePSM1, "$($destination)\Posh-Junos.psm1")
     
     Write-Host -Fore Green 'Module Posh-Junos has been successfully installed.'
