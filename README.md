@@ -21,9 +21,15 @@ module to work correctly. If you do not, then please visit the above link and in
 
 ### Installation
 
-For automatic installation (preferred), copy the following command and paste it into your Powershell console
+I recommend using either of these two automatic installation methods. You will need to install [PsGet][9] if you don't already have it for the first option.
 
-`iex (New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/scottdware/Posh-Junos/master/install.ps1")`
+- If you have PsGet installed, run the following command:
+	- `Install-Module Posh-Junos`
+- Without PsGet, paste the following into your Powershell console:
+	- `iex (New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/scottdware/Posh-Junos/master/install.ps1")`
+
+**NOTE**
+> You can update the module by issuing the `-Update` flag to the `Install-Module Posh-Junos` command if you are using PsGet. If you do not use PsGet, then you can re-run the command in the second option above and it will update the module to the newest version.
 
 **Manual Installation**
 
@@ -48,3 +54,4 @@ Please visit the [Wiki][4] for more detailed documentation.
 [6]: https://techwiki.juniper.net/Automation_Scripting/Scripts_by_Languages/Ruby
 [7]: http://www.juniper.net/us/en/products-services/nos/junos/
 [8]: http://www.juniper.net/us/en/
+[9]: http://psget.net/
