@@ -559,4 +559,7 @@ function Get-SRXProxyID {
     }
 }
 
-Export-ModuleMember -Function Invoke-JunosConfig, Invoke-RpcCommand, Get-JunosFacts, Get-SRXProxyID
+Export-ModuleMember -Function Invoke-JunosConfig
+Export-ModuleMember -Function Invoke-RpcCommand
+Export-ModuleMember -Function Get-JunosFacts
+Export-ModuleMember -Function Get-SRXProxyID
