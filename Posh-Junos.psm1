@@ -550,7 +550,7 @@ function Get-SRXProxyID {
     }
     
     else {
-        Write-Output "-- Copy & Paste into SRX --"
+        Write-Output "-- Copy & Paste into SRX --`n"
         
         foreach ($localIP in $Local) {
             foreach ($remoteIP in $Remote) {
