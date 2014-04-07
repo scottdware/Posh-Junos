@@ -550,6 +550,8 @@ function Get-SRXProxyID {
     }
     
     else {
+        Write-Output "-- Copy & Paste into SRX --"
+        
         foreach ($localIP in $Local) {
             foreach ($remoteIP in $Remote) {
                 Write-Output "set security ipsec vpn $VPN traffic-selector TS${index} local-ip $localIP remote-ip $remoteIP"
