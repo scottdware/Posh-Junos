@@ -328,7 +328,7 @@ function Get-SRXProxyID {
         
         foreach ($localIP in $Local) {
             foreach ($remoteIP in $Remote) {
-                $selector = "set security ipsec vpn $VPN traffic-selector $localIP_$remoteIP local-ip $localIP remote-ip $remoteIP"
+                $selector = "set security ipsec vpn $VPN traffic-selector $($localIP)_$($remoteIP) local-ip $localIP remote-ip $remoteIP"
                 Log-Output -File $File -Content $selector
             }
         }
@@ -341,7 +341,7 @@ function Get-SRXProxyID {
         
         foreach ($localIP in $Local) {
             foreach ($remoteIP in $Remote) {
-                Write-Output "set security ipsec vpn $VPN traffic-selector $localIP_$remoteIP local-ip $localIP remote-ip $remoteIP"
+                Write-Output "set security ipsec vpn $VPN traffic-selector $($localIP)_$($remoteIP) local-ip $localIP remote-ip $remoteIP"
             }
         }    
     }
