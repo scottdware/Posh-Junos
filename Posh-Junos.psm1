@@ -311,8 +311,6 @@ function Get-SRXProxyID {
         [string] $File
     )
     
-    $index = 1
-    
     if ($File) {
         if (Test-Path $File) {
             $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
@@ -330,10 +328,8 @@ function Get-SRXProxyID {
         
         foreach ($localIP in $Local) {
             foreach ($remoteIP in $Remote) {
-                $selector = "set security ipsec vpn $VPN traffic-selector TS${index} local-ip $localIP remote-ip $remoteIP"
+                $selector = "set security ipsec vpn $VPN traffic-selector $localIP_$remoteIP local-ip $localIP remote-ip $remoteIP"
                 Log-Output -File $File -Content $selector
-                
-                $index += 1
             }
         }
         
@@ -345,8 +341,7 @@ function Get-SRXProxyID {
         
         foreach ($localIP in $Local) {
             foreach ($remoteIP in $Remote) {
-                Write-Output "set security ipsec vpn $VPN traffic-selector TS${index} local-ip $localIP remote-ip $remoteIP"
-                $index += 1
+                Write-Output "set security ipsec vpn $VPN traffic-selector $localIP_$remoteIP local-ip $localIP remote-ip $remoteIP"
             }
         }    
     }
