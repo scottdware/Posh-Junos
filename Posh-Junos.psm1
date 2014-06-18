@@ -311,6 +311,9 @@ function Get-SRXProxyID {
         [string] $File
     )
     
+    $Total = $Local.Count * $Remote.Count
+    $Start = 1
+        
     if ($File) {
         if (Test-Path $File) {
             $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
@@ -326,10 +329,15 @@ function Get-SRXProxyID {
         
         Log-Output -File $File -Content "configure"
         
-        foreach ($localIP in $Local) {
-            foreach ($remoteIP in $Remote) {
-                $selector = "set security ipsec vpn $VPN traffic-selector $($localIP)_$($remoteIP) local-ip $localIP remote-ip $remoteIP"
-                Log-Output -File $File -Content $selector
+        while ($Start -le $Total) {
+            foreach ($localIP in $Local) {
+                foreach ($remoteIP in $Remote) {
+                    # $selector = "set security ipsec vpn $VPN traffic-selector $($localIP)_$($remoteIP) local-ip $localIP remote-ip $remoteIP"
+                    $selector = "set security ipsec vpn $VPN traffic-selector TS$($Start) local-ip $localIP remote-ip $remoteIP"
+                    Log-Output -File $File -Content $selector
+                    
+                    $Start += 1
+                }
             }
         }
         
@@ -339,11 +347,16 @@ function Get-SRXProxyID {
     else {
         Write-Output "-- Copy & Paste into SRX --`n"
         
-        foreach ($localIP in $Local) {
-            foreach ($remoteIP in $Remote) {
-                Write-Output "set security ipsec vpn $VPN traffic-selector $($localIP)_$($remoteIP) local-ip $localIP remote-ip $remoteIP"
+        while ($Start -le $Total) {
+            foreach ($localIP in $Local) {
+                foreach ($remoteIP in $Remote) {
+                    # Write-Output "set security ipsec vpn $VPN traffic-selector $($localIP)_$($remoteIP) local-ip $localIP remote-ip $remoteIP"
+                    Write-Output "set security ipsec vpn $VPN traffic-selector TS$($Start) local-ip $localIP remote-ip $remoteIP"
+                    
+                    $Start += 1
+                }
             }
-        }    
+        }
     }
 }
 
