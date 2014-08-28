@@ -88,7 +88,7 @@ function Invoke-JunosConfig {
     $config = Get-Content (Resolve-Path $ConfigFile)
     $devices = Import-CSV (Resolve-Path $DeviceList)
     $headers = $devices[0].PSObject.Properties | Select-Object Name
-    $totalDevices = $devices.Count
+    $totalDevices = $devices | Measure-Object
     $current = 0
     $errors = 0
 
@@ -112,7 +112,7 @@ function Invoke-JunosConfig {
         New-Item -Path $logfile -ItemType file | Out-Null
     }
 
-    Write-Output "`nStarting configuration on a total of $totalDevices devices."
+    Write-Output "`nStarting configuration on a total of $($totalDevices.Count) devices."
     Write-Output "Results will be logged to '$logfile'`n"
 
     foreach ($row in $devices) {
@@ -128,8 +128,8 @@ function Invoke-JunosConfig {
         }
 
         $creds = Get-Auth -User $user -Password $pass
-        $percent = [Math]::Round($current / $totalDevices * 100)
-        Write-Progress -Activity 'Configuration in progress...' -Status "$current of $totalDevices devices ($percent%):" -PercentComplete $percent
+        $percent = [Math]::Round($current / $totalDevices.Count * 100)
+        Write-Progress -Activity 'Configuration in progress...' -Status "$current of $($totalDevices.Count) devices ($percent%):" -PercentComplete $percent
 
         Log-Output -File $logfile -Content "[$(Timestamp)] Starting configuration on $Device..."
 
