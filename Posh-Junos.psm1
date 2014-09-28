@@ -293,7 +293,7 @@ function Get-TrafficSelector {
     .Example
         Get-TrafficSelector -Local 10.1.1.0/24, 192.168.1.25/32 -Remote 172.20.0.0/23 -VPN Some-Company
     .Link
-        https://github.com/scottdware/Posh-Junos/wiki/Functions#get-TrafficSelector
+        https://github.com/scottdware/Posh-Junos/wiki/Functions#get-trafficselector
     #>
     
     [CmdletBinding()]
