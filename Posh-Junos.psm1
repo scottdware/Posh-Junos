@@ -272,7 +272,7 @@ function Invoke-RpcCommand {
     }
 }
 
-function Get-TrafficSelector {
+function Create-TrafficSelector {
     <#
     .Synopsis
         Generate traffic-selectors (multi proxy-ID) for SRX devices.
@@ -291,9 +291,9 @@ function Get-TrafficSelector {
     .Parameter File
         This will allow you to save your results to the given file.
     .Example
-        Get-TrafficSelector -Local 10.1.1.0/24, 192.168.1.25/32 -Remote 172.20.0.0/23 -VPN Some-Company
+        Create-TrafficSelector -Local 10.1.1.0/24, 192.168.1.25/32 -Remote 172.20.0.0/23 -VPN Some-Company
     .Link
-        https://github.com/scottdware/Posh-Junos/wiki/Functions#get-trafficselector
+        https://github.com/scottdware/Posh-Junos/wiki/Functions#Create-TrafficSelector
     #>
     
     [CmdletBinding()]
@@ -508,5 +508,5 @@ function Get-Junos {
 
 Export-ModuleMember -Function Invoke-JunosConfig
 Export-ModuleMember -Function Invoke-RpcCommand
-Export-ModuleMember -Function Get-TrafficSelector
+Export-ModuleMember -Function Create-TrafficSelector
 Export-ModuleMember -Function Get-Junos
