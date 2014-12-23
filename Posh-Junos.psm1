@@ -171,7 +171,7 @@ function Invoke-JunosConfig {
     }
 }
 
-function Invoke-RpcCommand {
+function Invoke-JunosCommand {
     <#
     .Synopsis
         Execute RPC commands and return the results.
@@ -192,13 +192,13 @@ function Invoke-RpcCommand {
     .Parameter File
         This will allow you to save your results to the given file.
     .Example
-        Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users" -User admin
+        Invoke-JunosCommand -Device firewall-1.company.com -Command "show system users" -User admin
     .Example
-        Invoke-RpcCommand -Device firewall-1.company.com -Command "show system users; show system storage" -User admin
+        Invoke-JunosCommand -Device firewall-1.company.com -Command "show system users; show system storage" -User admin
     .Example
-        Invoke-RpcCommand -Device firewall-1.company.com -Command C:\Temp\commands.txt -User admin
+        Invoke-JunosCommand -Device firewall-1.company.com -Command C:\Temp\commands.txt -User admin
     .Link
-        https://github.com/scottdware/Posh-Junos/wiki/Functions#invoke-rpccommand
+        https://github.com/scottdware/Posh-Junos/wiki/Functions#invoke-junoscommand
     #>
 
     [CmdletBinding()]
@@ -507,6 +507,6 @@ function Get-Junos {
 }
 
 Export-ModuleMember -Function Invoke-JunosConfig
-Export-ModuleMember -Function Invoke-RpcCommand
+Export-ModuleMember -Function Invoke-JunosCommand
 Export-ModuleMember -Function New-TrafficSelector
 Export-ModuleMember -Function Get-Junos
