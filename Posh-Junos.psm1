@@ -228,47 +228,99 @@ function Invoke-JunosCommand {
         $creds = Get-Auth -User $User -Password $Password
     }
 
-    try {
-        $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
+    if ((Test-Path $Device -PathType Leaf -ErrorAction 'SilentlyContinue')) {
+        $hosts = @()
+        Get-Content (Resolve-Path $Device) | foreach { $hosts += $_ }
+        
+        foreach ($host in $hosts) {
+            try {
+                $conn = New-SSHSession -ComputerName $host -Credential $creds -AcceptKey $true
 
-        if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
-            $commands = @()
-            Get-Content (Resolve-Path $Command) | foreach { $commands += $_ }
-            $results = Invoke-SSHCommand -Command $($commands -join "; ") -SSHSession $conn
-        }
+                if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
+                    $commands = @()
+                    Get-Content (Resolve-Path $Command) | foreach { $commands += $_ }
+                    $results = Invoke-SSHCommand -Command $($commands -join "; ") -SSHSession $conn
+                }
 
-        else {
-            $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
-        }
+                else {
+                    $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
+                }
 
-        if ($File) {
-            if (Test-Path $File) {
-                $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
-                if ($ans -eq "y") {
-                    Remove-Item -Path $File -ErrorAction 'SilentlyContinue'
-                    New-Item -Path $File -ItemType file | Out-Null
+                if ($File) {
+                    if (Test-Path $File) {
+                        $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
+                        if ($ans -eq "y") {
+                            Remove-Item -Path $File -ErrorAction 'SilentlyContinue'
+                            New-Item -Path $File -ItemType file | Out-Null
+                        }
+                    }
+
+                    else {
+                        New-Item -Path $File -ItemType file | Out-Null
+                    }
+
+                    Write-Output $results.Output.trim() >> (Resolve-Path $File)
+                }
+
+                else {
+                    Write-Output $results.Output.trim()
                 }
             }
 
-            else {
-                New-Item -Path $File -ItemType file | Out-Null
+            catch {
+                Write-Warning "There was a problem connecting to $Device."
+                Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
             }
 
-            Write-Output $results.Output.trim() >> (Resolve-Path $File)
-        }
-
-        else {
-            Write-Output $results.Output.trim()
+            finally {
+                Remove-SSHSession -SSHSession $conn | Out-Null
+            }
         }
     }
+    
+    else {
+        try {
+            $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
 
-    catch {
-        Write-Warning "There was a problem connecting to $Device."
-        Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
-    }
+            if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
+                $commands = @()
+                Get-Content (Resolve-Path $Command) | foreach { $commands += $_ }
+                $results = Invoke-SSHCommand -Command $($commands -join "; ") -SSHSession $conn
+            }
 
-    finally {
-        Remove-SSHSession -SSHSession $conn | Out-Null
+            else {
+                $results = Invoke-SSHCommand -Command $($Command) -SSHSession $conn
+            }
+
+            if ($File) {
+                if (Test-Path $File) {
+                    $ans = Read-Host 'Log file exists. Do you wish to overwrite? [y/n]'
+                    if ($ans -eq "y") {
+                        Remove-Item -Path $File -ErrorAction 'SilentlyContinue'
+                        New-Item -Path $File -ItemType file | Out-Null
+                    }
+                }
+
+                else {
+                    New-Item -Path $File -ItemType file | Out-Null
+                }
+
+                Write-Output $results.Output.trim() >> (Resolve-Path $File)
+            }
+
+            else {
+                Write-Output $results.Output.trim()
+            }
+        }
+
+        catch {
+            Write-Warning "There was a problem connecting to $Device."
+            Write-Warning "Please make sure your credentials are correct, and that the device is reachable."
+        }
+
+        finally {
+            Remove-SSHSession -SSHSession $conn | Out-Null
+        }
     }
 }
 
