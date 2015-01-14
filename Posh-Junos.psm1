@@ -307,12 +307,12 @@ function Invoke-JunosCommand {
                     New-Item -Path $File -ItemType file | Out-Null
                 }
 
-                Write-Output "$host`n===============`n" >> (Resolve-Path $File)
+                Write-Output "$Device`n===============`n" >> (Resolve-Path $File)
                 Write-Output $results.Output.trim() >> (Resolve-Path $File)
             }
 
             else {
-                Write-Output "$host`n===============`n"
+                Write-Output "$Device`n===============`n"
                 Write-Output $results.Output.trim()
             }
         }
