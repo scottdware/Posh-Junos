@@ -260,12 +260,14 @@ function Invoke-JunosCommand {
                     }
 
                     Write-Output "`n$host`n===============`n" >> (Resolve-Path $File)
-                    Write-Output "$($results.Output.trim())`n" >> (Resolve-Path $File)
+                    Write-Output $results.Output.trim() >> (Resolve-Path $File)
+                    Write-Output "`n" >> (Resolve-Path $File)
                 }
 
                 else {
                     Write-Output "`n$host`n===============`n"
-                    Write-Output "$($results.Output.trim())`n"
+                    Write-Output $results.Output.trim())
+                    Write-Output "`n"
                 }
             }
 
@@ -308,12 +310,14 @@ function Invoke-JunosCommand {
                 }
 
                 Write-Output "`n$Device`n===============`n" >> (Resolve-Path $File)
-                Write-Output "$($results.Output.trim())`n" >> (Resolve-Path $File)
+                Write-Output $results.Output.trim() >> (Resolve-Path $File)
+                Write-Output "`n" >> (Resolve-Path $File)
             }
 
             else {
                 Write-Output "`n$Device`n===============`n"
-                Write-Output "$($results.Output.trim())`n"
+                Write-Output $results.Output.trim()
+                Write-Output "`n"
             }
         }
 
