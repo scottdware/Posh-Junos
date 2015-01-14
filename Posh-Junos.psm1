@@ -266,7 +266,7 @@ function Invoke-JunosCommand {
 
                 else {
                     Write-Output "`n$host`n===============`n"
-                    Write-Output $results.Output.trim())
+                    Write-Output $results.Output.trim()
                     Write-Output "`n"
                 }
             }
