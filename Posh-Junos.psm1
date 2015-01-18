@@ -178,7 +178,8 @@ function Invoke-JunosCommand {
     .Description
         This function allows you to execute RPC commands, such as any "show" command.
     .Parameter Device
-        The Junos device you wish to execute the command on.
+        The Junos device you wish to execute the command on. You can also specify a text file 
+        with host names or IP addresses (one per line) if you wish to run the command on multiple devices.
     .Parameter Command
         The command that you want to execute. Please enclose in double quotes "". To execute
         multiple commands, separate them using a ; (see examples). You can also specify a file
