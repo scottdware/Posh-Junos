@@ -46,6 +46,9 @@ command.
 
 Please visit the [Wiki][4] for more detailed documentation.
 
+### License
+[MIT][license]
+
 [1]: https://github.com/darkoperator/Posh-SSH "Posh-SSH"
 [2]: https://github.com/darkoperator "darkoperator"
 [3]: https://github.com/scottdware/Posh-Junos/archive/master.zip
@@ -55,3 +58,4 @@ Please visit the [Wiki][4] for more detailed documentation.
 [7]: http://www.juniper.net/us/en/products-services/nos/junos/
 [8]: http://www.juniper.net/us/en/
 [9]: http://psget.net/
+[license]: https://github.com/scottdware/Posh-Junos/blob/master/LICENSE.txt
