@@ -134,7 +134,7 @@ function Invoke-JunosConfig {
         Log-Output -File $logfile -Content "[$(Timestamp)] Starting configuration on $Device..."
 
         try {
-            $conn = New-SSHSession -ComputerName $device -Credential $creds -AcceptKey $true
+            $conn = New-SSHSession -ComputerName $device -Credential $creds -AcceptKey:$true
             $size = $headers.Count
             $commands = @()
             $config | foreach { $commands += $_ }
@@ -235,7 +235,7 @@ function Invoke-JunosCommand {
         
         foreach ($host in $hosts) {
             try {
-                $conn = New-SSHSession -ComputerName $host -Credential $creds -AcceptKey $true
+                $conn = New-SSHSession -ComputerName $host -Credential $creds -AcceptKey:$true
 
                 if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
                     $commands = @()
@@ -285,7 +285,7 @@ function Invoke-JunosCommand {
     
     else {
         try {
-            $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
+            $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey:$true
 
             if ((Test-Path $Command -PathType Leaf -ErrorAction 'SilentlyContinue')) {
                 $commands = @()
@@ -471,7 +471,7 @@ function Get-Junos {
     }
 
     try {
-        $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey $true
+        $conn = New-SSHSession -ComputerName $Device -Credential $creds -AcceptKey:$true
         $results = Invoke-SSHCommand -Command "show version | display xml" -SSHSession $conn
         [xml] $version = $results.Output
         $info = @{}
