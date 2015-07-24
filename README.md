@@ -26,7 +26,9 @@ I recommend using either of these two automatic installation methods. You will n
 - If you have PsGet installed, run the following command:
 	- `Install-Module Posh-Junos`
 - Without PsGet, paste the following into your Powershell console:
-`iex (New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/scottdware/Posh-Junos/master/install.ps1")`
+<pre>
+iex (New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/scottdware/Posh-Junos/master/install.ps1")
+</pre>
 
 **NOTE**
 > You can update the module by issuing the `-Update` flag to the `Install-Module Posh-Junos` command if you are using PsGet. If you do not use PsGet, then you can re-run the command in the second option above and it will update the module to the newest version.
